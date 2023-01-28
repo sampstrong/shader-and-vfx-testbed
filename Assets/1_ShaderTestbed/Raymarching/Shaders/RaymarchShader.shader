@@ -19,8 +19,9 @@ Shader "Raymarch/RaymarchShader"
             #include "UnityCG.cginc"
 
             sampler2D _MainTex;
-            uniform float4 _CamWorldSpace;
             uniform float4x4 _CamFrustum, _CamToWorld;
+            uniform float _maxDistance;
+            uniform float4 _sphere1;
 
             struct appdata
             {
@@ -52,11 +53,54 @@ Shader "Raymarch/RaymarchShader"
                 return o;
             }
 
+            float sdSphere(float3 p, float s) // p = position, s = scale/radius
+            {
+                return length(p) - s;
+            }
+            
+            float distanceField(float3 p)
+            {
+                float Sphere1 = sdSphere(p - _sphere1.xyz, _sphere1.w);
+                return Sphere1;
+            }
+
+            fixed4 raymarching(float3 ro, float3 rd) // ro = ray origin, rd = ray direction
+            {
+                fixed4 result = fixed4(1,1,1,1);
+                const int max_iteration = 64;
+                float t = 0; // distance travelled along the ray direction
+
+                for (int i = 0; i < max_iteration; i++)
+                {
+                    // optimize shader to automatically render the environment beyond our max distance set in inspector
+                    if (t > _maxDistance) 
+                    {
+                        // Render Environment
+                        result = fixed4(rd, 1);
+                        break;
+                    }
+
+                    float3 p = ro + rd * t; // p = position
+                    // Check for hit in distance field
+                    float d = distanceField(p);
+                    if (d < 0.01) // if we have hit something
+                    {
+                        // shading
+                        result = fixed4(1,1,1,1);
+                        break;
+                    }
+                    t += d;
+                }
+                
+                return result;
+            }
+
             fixed4 frag (v2f i) : SV_Target
             {
                 float3 rayDirection = normalize(i.ray.xyz);
-                float3 rayOrigin = _CamWorldSpace;
-                return fixed4(rayDirection, 1);
+                float3 rayOrigin = _WorldSpaceCameraPos;
+                fixed4 result = raymarching(rayOrigin, rayDirection);
+                return result;
             }
             ENDCG
         }
