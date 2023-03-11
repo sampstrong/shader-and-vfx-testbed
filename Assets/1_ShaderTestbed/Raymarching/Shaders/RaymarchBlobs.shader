@@ -3,6 +3,7 @@ Shader "Unlit/RaymarchBlobs"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+    	_SmoothAmount ("Smooth Amount", Range(0, 0.2)) = 0.1
     }
     SubShader
     {
@@ -37,6 +38,7 @@ Shader "Unlit/RaymarchBlobs"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            float _SmoothAmount;
 
             v2f vert (appdata v)
             {
@@ -130,7 +132,7 @@ Shader "Unlit/RaymarchBlobs"
 
 			float getDist(float3 p)
             {
-				float k = 0.1;
+				//float k = 0.1;
             	
 				float s1 = sphere1(p);
             	float s2 = sphere2(p);
@@ -138,10 +140,10 @@ Shader "Unlit/RaymarchBlobs"
             	float s4 = sphere4(p);
             	float s5 = sphere5(p);
 
-				float smin1 = smin(s1, s2, k);
-            	float smin2 = smin(smin1, s3, k);
-            	float smin3 = smin(smin2, s4, k);
-            	float d = smin(smin3, s5, k);
+				float smin1 = smin(s1, s2, _SmoothAmount);
+            	float smin2 = smin(smin1, s3, _SmoothAmount);
+            	float smin3 = smin(smin2, s4, _SmoothAmount);
+            	float d = smin(smin3, s5, _SmoothAmount);
             	
 				return d;
 			}
