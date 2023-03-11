@@ -17,9 +17,9 @@ Shader "Unlit/RaymarchTut"
 
             #include "UnityCG.cginc"
 
-#define MAX_STEPS 100
-#define MAX_DIST 100
-#define SURF_DIST 1e-3 // 0.001
+			#define MAX_STEPS 100
+			#define MAX_DIST 100
+			#define SURF_DIST 1e-3 // 0.001
 
             struct appdata
             {
