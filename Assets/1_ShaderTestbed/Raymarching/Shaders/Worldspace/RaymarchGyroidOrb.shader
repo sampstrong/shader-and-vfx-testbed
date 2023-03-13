@@ -1,4 +1,4 @@
-Shader "Unlit/RaymarchTut"
+Shader "Raymarch/GyroidOrb"
 {
     Properties
     {
@@ -16,6 +16,8 @@ Shader "Unlit/RaymarchTut"
             #pragma fragment frag
 
             #include "UnityCG.cginc"
+            #include "Lighting.cginc"
+            #include "AutoLight.cginc"
 
 			#define MAX_STEPS 100
 			#define MAX_DIST 100
@@ -48,12 +50,41 @@ Shader "Unlit/RaymarchTut"
                 return o;
             }
 
-			float getDist(float3 p) {
-		
-				float d = length(p) - .5; // sphere
-				d = length(float2(length(p.xy) - .5, p.z)) - .1; // torus upright
-            	d = length(float2(length(p.xz) - .4, p.y)) - .1; // torus flat
-				return d;
+            float ballGyroid(float3 p)
+            {
+            	float rescaleFactor = 25.0;
+	            p *= rescaleFactor;
+
+            	float thickness = 0.001;
+
+            	thickness = thickness + sin(_Time.y) * 0.005 + 0.02; // pulse
+
+				p.y += _Time.y; // animate
+            	
+            	float gyroid = abs(0.7 * dot(sin(p), cos(p.yzx)) / rescaleFactor) - thickness;
+            	
+            	return gyroid;
+            }
+
+            float smin(float a, float b, float k)
+            {
+	            float h = clamp(0.5 + 0.5 * (b-a)/k, 0.0, 1.0);
+            	return lerp(b, a, h) - k * h * (1.0 - h);
+            }
+            
+			float getDist(float3 p)
+            {
+				float ball = length(p) - .4;
+            	ball = abs(ball) - 0.01;
+				float g = ballGyroid(p);
+
+            	float k = 0.01;
+
+            	// ball = max(ball, g); // boolean intersection
+            	ball = smin(ball, g, -k); // negative k value turns smin into smax
+ 
+            	
+				return ball;
 			}
 
 			float rayMarch(float3 ro, float3 rd) {
@@ -80,6 +111,24 @@ Shader "Unlit/RaymarchTut"
 				return normalize(n);
 			}
 
+            float3 getViewVector(float3 pos, float3 camPos)
+            {
+	            float3 viewVec = camPos - pos;
+
+            	return viewVec;
+            }
+
+            float3 getLighting(float3 normalVec)
+            {
+            	float3 lightDir = _WorldSpaceLightPos0.xyz;
+            	float3 lightCol = _LightColor0.rgb;
+            	float3 ambient = float3(.1, .1, .1);
+	            float3 falloff = max(0.0, dot(normalVec, lightDir));
+            	float3 lighting = (falloff * lightCol) + ambient;
+            	
+            	return lighting;
+            }
+
             fixed4 frag (v2f i) : SV_Target
             {
                 float2 uv = i.uv - .5;
@@ -97,7 +146,8 @@ Shader "Unlit/RaymarchTut"
                 if (d < MAX_DIST){
                     float3 p = ro + rd * d;
                     float3 n = getNormal(p);
-                	col.rgb = n;
+                	float3 l = getLighting(n);
+                	col.rgb = l;
                 }
                 else
                 {

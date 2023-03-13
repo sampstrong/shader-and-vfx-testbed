@@ -1,4 +1,4 @@
-Shader "Unlit/RaymarchBlobs"
+Shader "Raymarch/Blobs"
 {
     Properties
     {
