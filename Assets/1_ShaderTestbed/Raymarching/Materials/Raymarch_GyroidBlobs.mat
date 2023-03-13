@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Raymarch_GyroidOrb
-  m_Shader: {fileID: 4800000, guid: 36b01a83b75884cad978a11e75751243, type: 3}
+  m_Name: Raymarch_GyroidBlobs
+  m_Shader: {fileID: 4800000, guid: 0a5332963e2074fb89d425add6aa02e7, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -21,7 +21,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: bf648da4a4b3240cc8fb6d4ef1cb3bd2, type: 3}
+        m_Texture: {fileID: 2800000, guid: c58e2d034ff314396a7c5b1acf486abc, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
