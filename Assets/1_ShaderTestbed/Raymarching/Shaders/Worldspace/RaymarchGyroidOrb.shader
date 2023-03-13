@@ -113,7 +113,7 @@ Shader "Raymarch/GyroidOrb"
 
             float3 getViewVector(float3 pos, float3 camPos)
             {
-	            float3 viewVec = camPos - pos;
+	            float3 viewVec = normalize(camPos - pos);
 
             	return viewVec;
             }
@@ -127,6 +127,13 @@ Shader "Raymarch/GyroidOrb"
             	float3 lighting = (falloff * lightCol) + ambient;
             	
             	return lighting;
+            }
+
+            float2 getMatcap(float3 eye, float3 normal)
+            {
+	            float3 reflected = reflect(eye, normal);
+  				float m = 2.8284271247461903 * sqrt(reflected.z + 1.0);
+  				return reflected.xy / m + 0.5;
             }
 
             fixed4 frag (v2f i) : SV_Target
@@ -147,7 +154,12 @@ Shader "Raymarch/GyroidOrb"
                     float3 p = ro + rd * d;
                     float3 n = getNormal(p);
                 	float3 l = getLighting(n);
-                	col.rgb = l;
+
+                	float3 eyeVec = getViewVector(i.hitPos, _WorldSpaceCameraPos);
+					float2 matcapUV = getMatcap(eyeVec, n);
+                	float3 color = tex2D(_MainTex, matcapUV);
+                	
+                	col.rgb = color;
                 }
                 else
                 {
