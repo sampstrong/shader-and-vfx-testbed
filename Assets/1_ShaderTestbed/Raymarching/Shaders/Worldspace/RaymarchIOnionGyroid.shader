@@ -3,6 +3,7 @@ Shader "Raymarch/OnionGyroid"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+    	_HDRIntensity ("HDR Intensity", Range(1, 20)) = 1.0
     }
     SubShader
     {
@@ -39,6 +40,7 @@ Shader "Raymarch/OnionGyroid"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            float _HDRIntensity;
 
             v2f vert (appdata v)
             {
@@ -181,6 +183,8 @@ Shader "Raymarch/OnionGyroid"
                 	float3 eyeVec = getViewVector(i.hitPos, _WorldSpaceCameraPos);
 					float2 matcapUV = getMatcap(eyeVec, n);
                 	float3 color = tex2D(_MainTex, matcapUV);
+
+                	color *= _HDRIntensity;
                 	
                 	col.rgb = color;
                 }
