@@ -12,6 +12,7 @@ Shader "Raymarch/NoiseGyroid"
     	_GyroidThickness("Gyroid Thickness", Range(0.0, 0.5)) = 0.1
     	_BlobThickness("Blob Thickness", Range(0.0, 0.5)) = 0.1
     	_MapOffest("Map Offset", Range(-1.0, 1.0)) = 0.01
+    	[Toggle] _Hollow("Hollow", Float) = 0
     }
     SubShader
     {
@@ -53,6 +54,7 @@ Shader "Raymarch/NoiseGyroid"
             float _SmoothAmount;
             float _GyroidThickness, _BlobThickness;
             float _MapOffset;
+            float _Hollow;
 
             v2f vert (appdata v)
             {
@@ -117,7 +119,10 @@ Shader "Raymarch/NoiseGyroid"
             	// float s = sphere(p, 0.3);
             	// s = abs(s) - 0.01;
             	float m = mapNoise(p);
-            	m = abs(m) - _BlobThickness;
+            	if (_Hollow == 1)
+            	{
+            		m = abs(m) - _BlobThickness;
+            	}
             	m += _MapOffset;
             	float g = gyroid(p);
             	float d = smin(m, g, -k);
