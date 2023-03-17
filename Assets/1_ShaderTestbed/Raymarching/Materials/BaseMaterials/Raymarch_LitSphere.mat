@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Raymarch_Sphere
+  m_Name: Raymarch_LitSphere
   m_Shader: {fileID: 4800000, guid: aa17ad66b32cc495d9ad2b8179687504, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
