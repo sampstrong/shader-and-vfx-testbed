@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Raymarch_NoiseGyroid
-  m_Shader: {fileID: 4800000, guid: f28358ed95b2d4dfdaf0911e6cd19a69, type: 3}
+  m_Name: Raymarch_NormalsSphereWorldSpace
+  m_Shader: {fileID: 4800000, guid: 107da3dad7db24635846bf247080c67e, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -26,15 +26,6 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BlobThickness: 0.03
-    - _GyroidThickness: 0.03
-    - _Hollow: 0
-    - _MapOffest: 0.72
-    - _NoiseOffset: 1.86
-    - _NoiseScale: 2.48
-    - _NoiseSpeed: 0.65
-    - _NoiseStrength: 0.192
-    - _SmoothAmount: 0.167
-    - _SphereRadius: 0.5
+    - _SmoothAmount: 0.1
     m_Colors: []
   m_BuildTextureStacks: []
