@@ -3,7 +3,7 @@ Shader "Raymarch/Interactive"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-    	_SmoothAmount ("Smooth Amount", Range(0, 0.2)) = 0.1
+    	_SmoothAmount ("Smooth Amount", Range(0, 0.4)) = 0.1
     	
     }
     SubShader
@@ -44,8 +44,10 @@ Shader "Raymarch/Interactive"
             sampler2D _MainTex;
             float4 _MainTex_ST;
             float _SmoothAmount;
-            uniform float4 _Positions[6];
             uniform int _NumberOfSpheres;
+            uniform float4 _Positions[6];
+            uniform float4 _Scales[6];
+            
 
             v2f vert (appdata v)
             {
@@ -83,7 +85,7 @@ Shader "Raymarch/Interactive"
             	
             	for (int i = 0; i < _NumberOfSpheres; i++)
             	{
-            		float s = sphere(p, 0.4, _Positions[i].xyz);
+            		float s = sphere(p, _Scales[i], _Positions[i].xyz);
 					if (i == 0)
 					{
 						lastDist = s;
