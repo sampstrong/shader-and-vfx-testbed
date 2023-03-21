@@ -1,9 +1,10 @@
-Shader "Raymarch/NormalsSphereWorldSpace"
+Shader "Raymarch/Interactive"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
     	_SmoothAmount ("Smooth Amount", Range(0, 0.2)) = 0.1
+    	
     }
     SubShader
     {
@@ -43,6 +44,8 @@ Shader "Raymarch/NormalsSphereWorldSpace"
             sampler2D _MainTex;
             float4 _MainTex_ST;
             float _SmoothAmount;
+            uniform float4 _Positions[6];
+            uniform int _NumberOfSpheres;
 
             v2f vert (appdata v)
             {
@@ -54,8 +57,9 @@ Shader "Raymarch/NormalsSphereWorldSpace"
                 return o;
             }
 
-            float sphere(float3 p, float r)
+            float sphere(float3 p, float r, float3 offset)
             {
+            	p -= offset;
 	            float d = length(p) - r;
             	return d;
             }
@@ -67,7 +71,29 @@ Shader "Raymarch/NormalsSphereWorldSpace"
 
 			float getDist(float3 p)
             {
-            	float d = sphere(p, 0.4);
+            	float s1 = sphere(p, 0.4, _Positions[0].xyz);
+            	float s2 = sphere(p, 0.4, _Positions[1].xyz);
+				float d = smin(s1, s2, _SmoothAmount);
+
+            	
+            	// float d = 0.0;
+// 
+            	// float spheresInScene[_NumberOfSpheres];
+// 
+            	// for (int i = 0; i < _NumberOfSpheres; i++)
+            	// {
+            	// 	float sphere = (p, 0.4, _Positions[i].xyz);
+            	// 	spheresInScene[i] = sphere;
+            	// }
+// 
+            	// float lastDist = spheresInScene[0];
+// 
+            	// for (int i = 1; i < _NumberOfSpheres; i++)
+            	// {
+            	// 	d = smin(spheresInScene[i], lastDist, _SmoothAmount);
+            	// 	lastDist = d;
+            	// }
+            	
 				return d;
 			}
 
