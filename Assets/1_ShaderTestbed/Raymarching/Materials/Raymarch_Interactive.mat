@@ -27,6 +27,6 @@ Material:
     m_Ints: []
     m_Floats:
     - _Number: 6
-    - _SmoothAmount: 0.3
+    - _SmoothAmount: 0.25
     m_Colors: []
   m_BuildTextureStacks: []

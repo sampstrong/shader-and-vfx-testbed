@@ -45,8 +45,8 @@ Shader "Raymarch/Interactive"
             float4 _MainTex_ST;
             float _SmoothAmount;
             uniform int _NumberOfSpheres;
-            uniform float4 _Positions[6];
-            uniform float4 _Scales[6];
+            uniform float4 _Positions[20];
+            uniform float4 _Scales[20];
             
 
             v2f vert (appdata v)
@@ -121,11 +121,7 @@ Shader "Raymarch/Interactive"
             fixed4 frag (v2f i) : SV_Target
             {
                 float2 uv = i.uv - .5;
-
-                // ray origin / virtual camera
-                float3 ro = i.ro; //float3(0,0,-3);
-
-                // ray direction
+                float3 ro = i.ro; 
                 float3 rd = normalize(i.hitPos - ro); //normalize(float3(uv.x, uv.y, 1.0));
             	
                 fixed4 col = 0;
