@@ -73,11 +73,6 @@ Shader "Raymarch/Interactive"
 
 			float getDist(float3 p)
             {
-            	// float s1 = sphere(p, 0.4, _Positions[0].xyz);
-            	// float s2 = sphere(p, 0.4, _Positions[1].xyz);
-				// float d = smin(s1, s2, _SmoothAmount);
-            	
-
             	float d = 0.0;
             	float lastDist = 0.0;
 
