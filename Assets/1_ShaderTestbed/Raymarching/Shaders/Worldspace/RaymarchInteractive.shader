@@ -71,28 +71,28 @@ Shader "Raymarch/Interactive"
 
 			float getDist(float3 p)
             {
-            	float s1 = sphere(p, 0.4, _Positions[0].xyz);
-            	float s2 = sphere(p, 0.4, _Positions[1].xyz);
-				float d = smin(s1, s2, _SmoothAmount);
-
+            	// float s1 = sphere(p, 0.4, _Positions[0].xyz);
+            	// float s2 = sphere(p, 0.4, _Positions[1].xyz);
+				// float d = smin(s1, s2, _SmoothAmount);
             	
-            	// float d = 0.0;
-// 
-            	// float spheresInScene[_NumberOfSpheres];
-// 
-            	// for (int i = 0; i < _NumberOfSpheres; i++)
-            	// {
-            	// 	float sphere = (p, 0.4, _Positions[i].xyz);
-            	// 	spheresInScene[i] = sphere;
-            	// }
-// 
-            	// float lastDist = spheresInScene[0];
-// 
-            	// for (int i = 1; i < _NumberOfSpheres; i++)
-            	// {
-            	// 	d = smin(spheresInScene[i], lastDist, _SmoothAmount);
-            	// 	lastDist = d;
-            	// }
+
+            	float d = 0.0;
+            	float lastDist = 0.0;
+
+            	if (_NumberOfSpheres <= 0) return 1.0;
+            	
+            	for (int i = 0; i < _NumberOfSpheres; i++)
+            	{
+            		float s = sphere(p, 0.4, _Positions[i].xyz);
+					if (i == 0)
+					{
+						lastDist = s;
+						continue;
+					}
+
+            		d = smin(lastDist, s, _SmoothAmount);
+            		lastDist = d;
+            	}
             	
 				return d;
 			}
