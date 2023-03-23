@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Raymarch_DisplacedMultiSphere
-  m_Shader: {fileID: 4800000, guid: b61333e65405f436bb7e1ae5b8c2fc7b, type: 3}
+  m_Name: Raymarch_DisplacedMultiSphereContainer
+  m_Shader: {fileID: 4800000, guid: 42ec97ee0b6b94eab81c5cc5f29b8671, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -27,13 +27,13 @@ Material:
     m_Ints: []
     m_Floats:
     - _DisplacementSize: 3.13
-    - _FresnelIntensity: 1.85
+    - _FresnelIntensity: 0.86
     - _FresnelRamp: 3.49
     - _ScaleFactor: 0.3
     - _SmoothAmount: 0.5
     - _Speed: -2
     - _SphereRadius: 0.532
     m_Colors:
-    - _FresnelColor1: {r: 0.7216981, g: 1, b: 0.76953125, a: 1}
-    - _FresnelColor2: {r: 1, g: 0, b: 0.4313831, a: 1}
+    - _FresnelColor1: {r: 0.4433962, g: 0.14012992, b: 0.42351094, a: 1}
+    - _FresnelColor2: {r: 0.24488932, g: 0.15801886, b: 0.5, a: 1}
   m_BuildTextureStacks: []
