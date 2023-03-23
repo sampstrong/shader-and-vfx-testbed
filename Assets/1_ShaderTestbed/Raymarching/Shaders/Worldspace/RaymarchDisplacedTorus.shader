@@ -3,13 +3,14 @@ Shader "Raymarch/DisplacedTorus"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-    	_FresnelColor("Fresnel Color", Color) = (1,1,1,1)
+    	_FresnelColor1("Fresnel Color 1", Color) = (1,1,1,1)
+    	_FresnelColor2("Fresnel Color 2", Color) = (1,1,1,1)
     	_FresnelIntensity ("Fresnel Intensity", Range(0, 10)) = 0.0
         _FresnelRamp ("Fresnel Ramp", Range(0, 10)) = 0.0
         _SmoothAmount ("Smooth Amount", Range(0, 0.5)) = 0.1
-    	_DisplacementAmount("Displacement Amount", Float) = 20.0
-    	_ScaleFactor("Scale Factor", Float) = 1.0
-    	_Speed("Speed", Float) = 0.0
+    	_DisplacementSize("Displacement Size", Range(0, 10)) = 20.0
+    	_ScaleFactor("Scale Factor", Float) = 0.25
+    	_Speed("Speed", Range(-5, 5)) = 3.0
     }
     SubShader
     {
@@ -46,10 +47,10 @@ Shader "Raymarch/DisplacedTorus"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            float4 _FresnelColor;
+            float4 _FresnelColor1, _FresnelColor2;
             float _FresnelIntensity, _FresnelRamp;
             float _SmoothAmount;
-            float _DisplacementAmount, _ScaleFactor, _Speed;
+            float _DisplacementSize, _ScaleFactor, _Speed;
 
             v2f vert (appdata v)
             {
@@ -79,7 +80,7 @@ Shader "Raymarch/DisplacedTorus"
             float displacement(float3 p) // inigo quillez
             {
             	float d1 = torus(p);
-	            float d2 = sin(_DisplacementAmount*p.x)*sin(_DisplacementAmount*p.y)*sin(_DisplacementAmount*p.z  + _Time.y * _Speed);
+	            float d2 = sin(_DisplacementSize*p.x)*sin(_DisplacementSize*p.y)*sin(_DisplacementSize*p.z  + _Time.y * _Speed);
             	return d1 + d2;
             }
 
@@ -161,7 +162,7 @@ Shader "Raymarch/DisplacedTorus"
                 	float3 l = getLighting(n);
                 	float f = getFresnel(n, ro);
                 	
-                	col.rgb = float3(1.0, 1.0, 1.0) * f * _FresnelColor;
+                	col.rgb = float3(1.0, 1.0, 1.0) * f * lerp(_FresnelColor1, _FresnelColor2, n);
                 }
                 else
                 {

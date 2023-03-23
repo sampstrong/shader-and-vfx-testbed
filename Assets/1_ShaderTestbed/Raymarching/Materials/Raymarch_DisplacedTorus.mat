@@ -26,10 +26,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DisplacementAmount: 4.1
+    - _DisplacementAmount: 4
+    - _DisplacementSize: 4
+    - _FresnelIntensity: 8.17
+    - _FresnelRamp: 2.56
     - _Offest: 0
     - _ScaleFactor: 0.25
-    - _SmoothAmount: 0.325
-    - _Speed: 0
-    m_Colors: []
+    - _SmoothAmount: 0.5
+    - _Speed: 3
+    m_Colors:
+    - _FresnelColor: {r: 0.113474555, g: 0.113474555, b: 0.2830189, a: 1}
+    - _FresnelColor1: {r: 0.108380646, g: 0.08713066, b: 0.20754719, a: 1}
+    - _FresnelColor2: {r: 0.21698111, g: 0.08495015, b: 0.20087978, a: 1}
   m_BuildTextureStacks: []
