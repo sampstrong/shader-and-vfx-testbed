@@ -1,11 +1,15 @@
-Shader "Raymarch/FresnelSphere"
+Shader "Raymarch/DisplacedTorus"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-    	_SmoothAmount ("Smooth Amount", Range(0, 0.2)) = 0.1
+    	_FresnelColor("Fresnel Color", Color) = (1,1,1,1)
     	_FresnelIntensity ("Fresnel Intensity", Range(0, 10)) = 0.0
         _FresnelRamp ("Fresnel Ramp", Range(0, 10)) = 0.0
+        _SmoothAmount ("Smooth Amount", Range(0, 0.5)) = 0.1
+    	_DisplacementAmount("Displacement Amount", Float) = 20.0
+    	_ScaleFactor("Scale Factor", Float) = 1.0
+    	_Speed("Speed", Float) = 0.0
     }
     SubShader
     {
@@ -24,7 +28,7 @@ Shader "Raymarch/FresnelSphere"
 
 			#define MAX_STEPS 100
 			#define MAX_DIST 100
-			#define SURF_DIST 1e-3 // 0.001
+			#define SURF_DIST 1e-6 
 
             struct appdata
             {
@@ -42,16 +46,18 @@ Shader "Raymarch/FresnelSphere"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            float4 _FresnelColor;
+            float _FresnelIntensity, _FresnelRamp;
             float _SmoothAmount;
-            float _FresnelRamp, _FresnelIntensity;
+            float _DisplacementAmount, _ScaleFactor, _Speed;
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-            	o.ro = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos,1));
-            	o.hitPos = v.vertex;
+            	o.ro = _WorldSpaceCameraPos;
+            	o.hitPos = mul(unity_ObjectToWorld, v.vertex);
                 return o;
             }
 
@@ -60,7 +66,22 @@ Shader "Raymarch/FresnelSphere"
 	            float d = length(p) - r;
             	return d;
             }
+
+            float torus(float3 p)
+            {
+	            //float d = length(float2(length(p.xz) - .4, p.y)) - .1; // torus flat
+            	float d = length(float2(length(p.xy) - 1.5, p.z)) - .6; // torus upright
+
+            	return d;
+            }
+
             
+            float displacement(float3 p) // inigo quillez
+            {
+            	float d1 = torus(p);
+	            float d2 = sin(_DisplacementAmount*p.x)*sin(_DisplacementAmount*p.y)*sin(_DisplacementAmount*p.z  + _Time.y * _Speed);
+            	return d1 + d2;
+            }
 
 			float smin(float a, float b, float k) {
 			  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
@@ -69,8 +90,9 @@ Shader "Raymarch/FresnelSphere"
 
 			float getDist(float3 p)
             {
-            	float d = sphere(p, 0.4);
-				return d;
+            	float d1 = torus(p);
+            	float d2 = displacement(p);
+				return smin(d1, d2, _SmoothAmount) * _ScaleFactor;
 			}
 
 			float rayMarch(float3 ro, float3 rd) {
@@ -115,6 +137,7 @@ Shader "Raymarch/FresnelSphere"
 	            float3 falloff = max(0.0, dot(normalVec, lightDir));
             	float3 lighting = (falloff * lightCol) + ambient;
             	
+            	
             	return lighting;
             }
 
@@ -138,7 +161,7 @@ Shader "Raymarch/FresnelSphere"
                 	float3 l = getLighting(n);
                 	float f = getFresnel(n, ro);
                 	
-                	col.rgb = float3(1.0, 1.0, 1.0) * f;
+                	col.rgb = float3(1.0, 1.0, 1.0) * f * _FresnelColor;
                 }
                 else
                 {
