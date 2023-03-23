@@ -1,4 +1,4 @@
-Shader "Raymarch/DisplacedTorus"
+Shader "Raymarch/DisplacedMultiSphere"
 {
     Properties
     {
@@ -7,10 +7,11 @@ Shader "Raymarch/DisplacedTorus"
     	_FresnelColor2("Fresnel Color 2", Color) = (1,1,1,1)
     	_FresnelIntensity ("Fresnel Intensity", Range(0, 10)) = 8.0
         _FresnelRamp ("Fresnel Ramp", Range(0, 10)) = 2.5
-        _SmoothAmount ("Smooth Amount", Range(0, 0.5)) = 0.1
+        _SmoothAmount ("Smooth Amount", Range(0, 0.5)) = 0.5
+    	_SphereRadius ("Sphere Radius", Range(0.5, 2.0)) = 2.0
     	_DisplacementSize("Displacement Size", Range(0, 10)) = 4.0
     	_ScaleFactor("Scale Factor", Float) = 0.25
-    	_Speed("Speed", Range(-5, 5)) = 3.0
+    	_Speed("Speed", Range(-5, 5)) = 0.0
     }
     SubShader
     {
@@ -49,7 +50,7 @@ Shader "Raymarch/DisplacedTorus"
             float4 _MainTex_ST;
             float4 _FresnelColor1, _FresnelColor2;
             float _FresnelIntensity, _FresnelRamp;
-            float _SmoothAmount;
+            float _SmoothAmount, _SphereRadius;
             float _DisplacementSize, _ScaleFactor, _Speed;
 
             v2f vert (appdata v)
@@ -68,32 +69,28 @@ Shader "Raymarch/DisplacedTorus"
             	return d;
             }
 
-            float torus(float3 p)
-            {
-	            //float d = length(float2(length(p.xz) - .4, p.y)) - .1; // torus flat
-            	float d = length(float2(length(p.xy) - 1.5, p.z)) - .6; // torus upright
-
-            	return d;
-            }
-
-            
-            float displacement(float3 p) // inigo quillez
-            {
-            	float d1 = torus(p);
-	            float d2 = sin(_DisplacementSize*p.x)*sin(_DisplacementSize*p.y)*sin(_DisplacementSize*p.z  + _Time.y * _Speed);
-            	return d1 + d2;
-            }
-
-			float smin(float a, float b, float k) {
+            float smin(float a, float b, float k) {
 			  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
 			  return lerp(b, a, h) - k * h * (1.0 - h);
 			}
 
+            
+            float displacement(float3 p, float3 offset, float radiusFactor) // inigo quillez
+            {
+            	float sph = sphere(p + offset, _SphereRadius * radiusFactor);
+	            float dis = sin(_DisplacementSize*p.x)*sin(_DisplacementSize*p.y+ _Time.y * _Speed)*sin(_DisplacementSize*p.z);
+				float d = sph + dis;
+            	
+            	return smin(sph, d, _SmoothAmount) * _ScaleFactor;
+            }
+
 			float getDist(float3 p)
             {
-            	float d1 = torus(p);
-            	float d2 = displacement(p);
-				return smin(d1, d2, _SmoothAmount) * _ScaleFactor;
+            	float s1 = displacement(p,float3(sin(_Time.y * 2), cos(_Time.y / 3), cos(_Time.y * 2.5)), 0.8);
+            	float s2 = displacement(p, float3(sin(_Time.y), sin(_Time.y / 5), cos(_Time.y)), 0.6);
+            	float s3 = displacement(p, float3(sin(_Time.y * 1.5), sin(_Time.y / 2), cos(_Time.y)), 0.4);
+            	float min1 = smin(s1, s2, _SmoothAmount);
+				return smin(min1, s3, _SmoothAmount);
 			}
 
 			float rayMarch(float3 ro, float3 rd) {

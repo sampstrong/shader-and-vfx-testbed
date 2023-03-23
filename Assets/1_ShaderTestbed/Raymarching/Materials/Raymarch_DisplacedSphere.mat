@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Raymarch_DisplacedTorus_BlueTurqoise
-  m_Shader: {fileID: 4800000, guid: 9f5ccf6c45cf84e9599ab256a80ebfdf, type: 3}
+  m_Name: Raymarch_DisplacedSphere
+  m_Shader: {fileID: 4800000, guid: fcb89d4abd83b4e989f8e77881010a50, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -26,16 +26,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DisplacementAmount: 4
-    - _DisplacementSize: 4
-    - _FresnelIntensity: 8
-    - _FresnelRamp: 2.5
-    - _Offest: 0
+    - _DisplacementSize: 4.11
+    - _FresnelIntensity: 1.85
+    - _FresnelRamp: 3.49
     - _ScaleFactor: 0.25
     - _SmoothAmount: 0.5
     - _Speed: 3
+    - _SphereRadius: 0.908
     m_Colors:
-    - _FresnelColor: {r: 0.113474555, g: 0.113474555, b: 0.2830189, a: 1}
-    - _FresnelColor1: {r: 0.1372549, g: 0.50980395, b: 0.49930528, a: 1}
-    - _FresnelColor2: {r: 0.181484, g: 0.078431375, b: 0.40392157, a: 1}
+    - _FresnelColor1: {r: 0.7216981, g: 1, b: 0.76953125, a: 1}
+    - _FresnelColor2: {r: 1, g: 0, b: 0.43138313, a: 1}
   m_BuildTextureStacks: []

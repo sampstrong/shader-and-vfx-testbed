@@ -1,4 +1,4 @@
-Shader "Raymarch/DisplacedTorus"
+Shader "Raymarch/DisplacedSphere"
 {
     Properties
     {
@@ -7,7 +7,8 @@ Shader "Raymarch/DisplacedTorus"
     	_FresnelColor2("Fresnel Color 2", Color) = (1,1,1,1)
     	_FresnelIntensity ("Fresnel Intensity", Range(0, 10)) = 8.0
         _FresnelRamp ("Fresnel Ramp", Range(0, 10)) = 2.5
-        _SmoothAmount ("Smooth Amount", Range(0, 0.5)) = 0.1
+        _SmoothAmount ("Smooth Amount", Range(0, 0.5)) = 0.5
+    	_SphereRadius ("Sphere Radius", Range(0.5, 2.0)) = 2.0
     	_DisplacementSize("Displacement Size", Range(0, 10)) = 4.0
     	_ScaleFactor("Scale Factor", Float) = 0.25
     	_Speed("Speed", Range(-5, 5)) = 3.0
@@ -49,7 +50,7 @@ Shader "Raymarch/DisplacedTorus"
             float4 _MainTex_ST;
             float4 _FresnelColor1, _FresnelColor2;
             float _FresnelIntensity, _FresnelRamp;
-            float _SmoothAmount;
+            float _SmoothAmount, _SphereRadius;
             float _DisplacementSize, _ScaleFactor, _Speed;
 
             v2f vert (appdata v)
@@ -79,7 +80,7 @@ Shader "Raymarch/DisplacedTorus"
             
             float displacement(float3 p) // inigo quillez
             {
-            	float d1 = torus(p);
+            	float d1 = sphere(p, _SphereRadius);
 	            float d2 = sin(_DisplacementSize*p.x)*sin(_DisplacementSize*p.y)*sin(_DisplacementSize*p.z  + _Time.y * _Speed);
             	return d1 + d2;
             }
@@ -91,7 +92,7 @@ Shader "Raymarch/DisplacedTorus"
 
 			float getDist(float3 p)
             {
-            	float d1 = torus(p);
+            	float d1 = sphere(p, _SphereRadius);
             	float d2 = displacement(p);
 				return smin(d1, d2, _SmoothAmount) * _ScaleFactor;
 			}
