@@ -27,8 +27,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _DisplacementSize: 3.13
-    - _FresnelIntensity: 0.86
-    - _FresnelRamp: 3.49
+    - _FresnelIntensity: 0.96
+    - _FresnelRamp: 0.93
     - _ScaleFactor: 0.3
     - _SmoothAmount: 0.5
     - _Speed: -2
@@ -36,4 +36,5 @@ Material:
     m_Colors:
     - _FresnelColor1: {r: 0.4433962, g: 0.14012992, b: 0.42351094, a: 1}
     - _FresnelColor2: {r: 0.24488932, g: 0.15801886, b: 0.5, a: 1}
+    - _OuterColor: {r: 0.31732625, g: 0.23362406, b: 0.3962264, a: 1}
   m_BuildTextureStacks: []
