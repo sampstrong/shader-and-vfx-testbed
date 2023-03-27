@@ -5,7 +5,8 @@ Shader "Raymarch/SmoothMaterials"
         _MainTex ("Texture", 2D) = "white" {}
     	_Color1 ("Color 1", Color) = (1,1,1,1)
     	_Color2 ("Color 2", Color) = (1,1,1,1)
-    	_SmoothAmount ("Smooth Amount", Range(0, 0.2)) = 0.1
+    	_SmoothAmount ("Smooth Amount", Range(0, 0.5)) = 0.1
+    	_Speed("Speed", Float) = 1.0
     }
     SubShader
     {
@@ -44,6 +45,7 @@ Shader "Raymarch/SmoothMaterials"
             float4 _MainTex_ST;
             float3 _Color1, _Color2;
             float _SmoothAmount;
+            float _Speed;
 
             v2f vert (appdata v)
             {
@@ -85,8 +87,8 @@ Shader "Raymarch/SmoothMaterials"
             float2 getDistMat(float3 p)
             {
             	float2 d;
-            	float s1 = sphere(p, 0.0,0.4);
-            	float s2 = sphere(p, 0.3,0.2);
+            	float s1 = sphere(p, float3(0.2, 0.0, 0.0),sin(_Time.y * _Speed) * 0.05 + 0.2);
+            	float s2 = sphere(p, float3(-0.2, 0.0, 0.0),-sin(_Time.y * _Speed) * 0.05 + 0.2);
 
 				d = sminMat(s1, s2, _SmoothAmount);
             	
