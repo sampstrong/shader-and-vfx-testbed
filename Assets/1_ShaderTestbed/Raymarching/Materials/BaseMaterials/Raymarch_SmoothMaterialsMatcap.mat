@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Raymarch_SmoothMaterials
-  m_Shader: {fileID: 4800000, guid: a62c67903ecef4cdf881465c890e5a74, type: 3}
+  m_Name: Raymarch_SmoothMaterialsMatcap
+  m_Shader: {fileID: 4800000, guid: 9189d548b2f9844ed9a643e69e0566f7, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -24,11 +24,19 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _MainTex1:
+        m_Texture: {fileID: 2800000, guid: 07f9d8b530c584b3d83a8464740f9d30, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex2:
+        m_Texture: {fileID: 2800000, guid: 555c4f769d4f54355832c9b54c3f492f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _SmoothAmount: 0.211
-    - _Speed: 2.31
+    - _SmoothAmount: 0.1
+    - _Speed: 1
     m_Colors:
-    - _Color1: {r: 0.0528183, g: 0, b: 1, a: 1}
-    - _Color2: {r: 0.9622642, g: 0, b: 0, a: 1}
+    - _Color1: {r: 1, g: 1, b: 1, a: 1}
+    - _Color2: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
