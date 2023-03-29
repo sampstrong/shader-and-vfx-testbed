@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_SG_Iridescent
+  m_Name: Shader Graphs_SG_IridescentHelmet
   m_Shader: {fileID: -6465566751694194690, guid: 3d5ca4c5bf8d041a187e13b113429e36,
     type: 3}
   m_ValidKeywords: []
@@ -73,8 +73,8 @@ Material:
     - _Power: 1.05
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _RoughnessAmount: 0.769
-    - _Strength: 0.242
+    - _RoughnessAmount: 0.817
+    - _Strength: 1
     m_Colors:
     - _BaseColor: {r: 0.49056602, g: 0.49056602, b: 0.49056602, a: 0}
   m_BuildTextureStacks: []
