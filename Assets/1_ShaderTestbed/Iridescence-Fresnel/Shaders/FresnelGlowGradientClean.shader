@@ -4,6 +4,8 @@ Shader "SamStrong/FresnelGlowGradientClean"
     {
         _MainTex ("Texture", 2D) = "white" {}
         
+        _Transparency("Transparency", Range(0, 1)) = 1
+        
         _Gloss ("Roughness", Range(0.0001, 1)) = 0.1
         _GlossColor ("Specular Color", Color) = (1,1,1,0)
         
@@ -55,6 +57,7 @@ Shader "SamStrong/FresnelGlowGradientClean"
             float _FresnelIntensity, _FresnelRamp;
             float _Gloss;
             float4 _GlossColor;
+            float _Transparency;
 
             v2f vert (appdata v)
             {
@@ -108,8 +111,9 @@ Shader "SamStrong/FresnelGlowGradientClean"
                 float3 finalColor = fresnelAmount * gradient;
                 finalColor = finalColor + directSpecular;
 
+                float alpha = lerp(1.0, fresnelAmount, _Transparency);
                 
-                return fixed4(finalColor, fresnelAmount);
+                return fixed4(finalColor, alpha);
             }
             ENDCG
         }
