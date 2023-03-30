@@ -7,10 +7,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SamStrong_FresnelGlowGradientClean3
+  m_Name: SamStrong_FresnelGlowGradientClean5Regular
   m_Shader: {fileID: 4800000, guid: f39545de482754e6fb29be98033b8be3, type: 3}
-  m_ValidKeywords:
-  - NORMAL_MAP_ON
+  m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -22,7 +21,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _GradientTex:
-        m_Texture: {fileID: 2800000, guid: 45dd53651bfd7403c951c4c0ec41688b, type: 3}
+        m_Texture: {fileID: 2800000, guid: 79fc03209dd6e4006b381c52120b4c2b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -30,16 +29,16 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: f4dbf731c2fbd4c14a0f94bfea04118b, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - NORMAL_MAP: 1
-    - _FresnelIntensity: 0.9
-    - _FresnelRamp: 0.32
+    - NORMAL_MAP: 0
+    - _FresnelIntensity: 0.99
+    - _FresnelRamp: 0.99
     - _Gloss: 0.697
-    - _Transparency: 0
+    - _Transparency: 0.258
     m_Colors:
-    - _GlossColor: {r: 0, g: 1, b: 0.44379663, a: 0}
+    - _GlossColor: {r: 1, g: 0.05476743, b: 0, a: 0}
   m_BuildTextureStacks: []
