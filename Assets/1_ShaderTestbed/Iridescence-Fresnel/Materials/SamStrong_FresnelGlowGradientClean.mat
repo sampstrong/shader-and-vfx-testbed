@@ -7,10 +7,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SamStrong_FresnelGlowGradient
-  m_Shader: {fileID: 4800000, guid: 5a9cc3473f63b47c8b19354a7042595e, type: 3}
-  m_ValidKeywords:
-  - NORMAL_MAP_ON
+  m_Name: SamStrong_FresnelGlowGradientClean
+  m_Shader: {fileID: 4800000, guid: f39545de482754e6fb29be98033b8be3, type: 3}
+  m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -21,10 +20,6 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _DistortTex:
-        m_Texture: {fileID: 2800000, guid: c2d662e23219d4e1cac2e91dde22b857, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _GradientTex:
         m_Texture: {fileID: 2800000, guid: cec97a326d2374b60b6ec9ee7739dad4, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -34,14 +29,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: f4dbf731c2fbd4c14a0f94bfea04118b, type: 3}
+        m_Texture: {fileID: 2800000, guid: 69f25b3beb74646a6a5f364f6b508d67, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - NORMAL_MAP: 1
-    - _DistortIntensity: 0.759
-    - _FresnelIntensity: 10
-    - _FresnelRamp: 1.03
-    m_Colors: []
+    - NORMAL_MAP: 0
+    - _FresnelIntensity: 1.34
+    - _FresnelRamp: 0.7
+    - _Gloss: 0.708
+    m_Colors:
+    - _GlossColor: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []
