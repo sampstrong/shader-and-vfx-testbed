@@ -88,15 +88,48 @@ Shader "SamStrong/CustomizableToon"
 
 
                 // custom toon
-                float2 gradUV = float2(clamp(lightFalloff, 0, 1), 0.5);
+                float2 gradUV = float2(clamp(lightFalloff, 0.01, 0.99), 0.5);
                 float3 grad = tex2D(_Gradient, gradUV);
-                float3 steppedGrad = step(0.1, grad);
 
                 float3 light = float3(lightFalloff, lightFalloff, lightFalloff);
 
-                float3 steppedLight = step(0.5, light);
+                float s0 = 0.01;
+                float3 g0 = tex2D(_Gradient, float2(s0, 0.5));
+
+                float s1 = 0.2;
+                float3 g1 = tex2D(_Gradient, float2(s1, 0.5));
+                float3 steppedGrad1 = step(float3(s1, s1, s1), lightFalloff) * g1;
+
+                float s2 = 0.3;
+                float3 g2 = tex2D(_Gradient, float2(s2, 0.5));
+                float3 steppedGrad2 = step(float3(s2, s2, s2), lightFalloff) * g2;
+
+                float s3 = 0.5;
+                float3 g3 = tex2D(_Gradient, float2(s3, 0.5));
+                float3 steppedGrad3 = step(float3(s3, s3, s3), lightFalloff) * g3;
+
+                float s4 = 0.7;
+                float3 g4 = tex2D(_Gradient, float2(s4, 0.5));
+                float3 steppedGrad4 = step(float3(s4, s4, s4), lightFalloff) * g4;
+
+                float s5 = 0.9;
+                float3 g5 = tex2D(_Gradient, float2(s5, 0.5));
+                float3 steppedGrad5 = step(float3(s5, s5, s5), lightFalloff) * g5;
+
+                float s6 = 0.98;
+                float3 g6 = tex2D(_Gradient, float2(s6, 0.5));
+                float3 steppedGrad6 = step(float3(s6, s6, s6), lightFalloff) * g6;
+
+                float3 final = g0 + max(steppedGrad6, max(steppedGrad5, max(steppedGrad4, max(steppedGrad3, max(steppedGrad1, steppedGrad2)))));
+
+                // if (grad == float3(0,0,0))
+                // {
+                //     grad = tex2D(_Gradient, float2(0.9, 0.5));
+                // }
+
+                float3 test = tex2D(_Gradient, float2(s3, 0.5));
                 
-                return float4 (steppedLight, 0);
+                return float4 (final, 0);
             }
             ENDCG
         }
