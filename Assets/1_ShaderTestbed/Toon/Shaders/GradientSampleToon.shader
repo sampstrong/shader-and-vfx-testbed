@@ -5,6 +5,7 @@ Shader "SamStrong/GradientSampleToon"
         _Color ("Color", Color) = (1,1,1,0)
         _Gloss ("Gloss", Float) = 1
         _Gradient ("Gradient Texture", 2D) = "white" {}
+        _Softness ("Edge Softness", Range(0, 0.1)) = 0.05
     }
     SubShader
     {
@@ -40,6 +41,8 @@ Shader "SamStrong/GradientSampleToon"
 
             float4 _Color;
             float _Gloss;
+
+            float _Softness;
 
             VertexOutput vert (VertexInput v)
             {
@@ -93,36 +96,43 @@ Shader "SamStrong/GradientSampleToon"
 
                 float3 light = float3(lightFalloff, lightFalloff, lightFalloff);
 
+
                 float s0 = 0.01;
                 float3 g0 = tex2D(_Gradient, float2(s0, 0.5));
 
                 float s1a = 0.2;
-                float s1b = 0.25;
+                s1a = s1a - (_Softness/2);
+                float s1b = s1a + (_Softness/2);
                 float3 g1 = tex2D(_Gradient, float2(s1a, 0.5));
                 float3 steppedGrad1 = smoothstep(float3(s1a, s1a, s1a), float3(s1b, s1b, s1b), lightFalloff) * g1;
 
                 float s2a = 0.3;
-                float s2b = 0.35;
+                s2a = s2a - (_Softness/2);
+                float s2b = s2a + (_Softness/2);
                 float3 g2 = tex2D(_Gradient, float2(s2a, 0.5));
                 float3 steppedGrad2 = smoothstep(float3(s2a, s2a, s2a), float3(s2b, s2b, s2b), lightFalloff) * g2;
 
                 float s3a = 0.5;
-                float s3b = 0.55;
+                s3a = s3a - (_Softness/2);
+                float s3b = s3a + (_Softness/2);
                 float3 g3 = tex2D(_Gradient, float2(s3a, 0.5));
                 float3 steppedGrad3 = smoothstep(float3(s3a, s3a, s3a), float3(s3b, s3b, s3b), lightFalloff) * g3;
 
                 float s4a = 0.7;
-                float s4b = 0.75;
+                s4a = s4a - (_Softness/2);
+                float s4b = s4a + (_Softness/2);
                 float3 g4 = tex2D(_Gradient, float2(s4a, 0.5));
                 float3 steppedGrad4 = smoothstep(float3(s4a, s4a, s4a), float3(s4b, s4b, s4b), lightFalloff) * g4;
 
                 float s5a = 0.87;
-                float s5b = 0.93;
+                s5a = s5a - (_Softness/2);
+                float s5b = s5a + (_Softness/2);
                 float3 g5 = tex2D(_Gradient, float2(s5a, 0.5));
                 float3 steppedGrad5 = smoothstep(float3(s5a, s5a, s5a), float3(s5b, s5b, s5b), lightFalloff) * g5;
 
                 float s6a = 0.95;
-                float s6b = 0.999;
+                s6a = s6a - (_Softness/2);
+                float s6b = s6a + (_Softness/2);
                 float3 g6 = tex2D(_Gradient, float2(s6a, 0.5));
                 float3 steppedGrad6 = smoothstep(float3(s6a, s6a, s6a), float3(s6b, s6b, s6b), lightFalloff) * g6;
 
