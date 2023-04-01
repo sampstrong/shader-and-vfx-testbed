@@ -1,4 +1,4 @@
-Shader "SamStrong/CustomizableToon"
+Shader "SamStrong/GradientSampleToon"
 {
     Properties
     {
@@ -96,29 +96,35 @@ Shader "SamStrong/CustomizableToon"
                 float s0 = 0.01;
                 float3 g0 = tex2D(_Gradient, float2(s0, 0.5));
 
-                float s1 = 0.2;
-                float3 g1 = tex2D(_Gradient, float2(s1, 0.5));
-                float3 steppedGrad1 = step(float3(s1, s1, s1), lightFalloff) * g1;
+                float s1a = 0.2;
+                float s1b = 0.25;
+                float3 g1 = tex2D(_Gradient, float2(s1a, 0.5));
+                float3 steppedGrad1 = smoothstep(float3(s1a, s1a, s1a), float3(s1b, s1b, s1b), lightFalloff) * g1;
 
-                float s2 = 0.3;
-                float3 g2 = tex2D(_Gradient, float2(s2, 0.5));
-                float3 steppedGrad2 = step(float3(s2, s2, s2), lightFalloff) * g2;
+                float s2a = 0.3;
+                float s2b = 0.35;
+                float3 g2 = tex2D(_Gradient, float2(s2a, 0.5));
+                float3 steppedGrad2 = smoothstep(float3(s2a, s2a, s2a), float3(s2b, s2b, s2b), lightFalloff) * g2;
 
-                float s3 = 0.5;
-                float3 g3 = tex2D(_Gradient, float2(s3, 0.5));
-                float3 steppedGrad3 = step(float3(s3, s3, s3), lightFalloff) * g3;
+                float s3a = 0.5;
+                float s3b = 0.55;
+                float3 g3 = tex2D(_Gradient, float2(s3a, 0.5));
+                float3 steppedGrad3 = smoothstep(float3(s3a, s3a, s3a), float3(s3b, s3b, s3b), lightFalloff) * g3;
 
-                float s4 = 0.7;
-                float3 g4 = tex2D(_Gradient, float2(s4, 0.5));
-                float3 steppedGrad4 = step(float3(s4, s4, s4), lightFalloff) * g4;
+                float s4a = 0.7;
+                float s4b = 0.75;
+                float3 g4 = tex2D(_Gradient, float2(s4a, 0.5));
+                float3 steppedGrad4 = smoothstep(float3(s4a, s4a, s4a), float3(s4b, s4b, s4b), lightFalloff) * g4;
 
-                float s5 = 0.9;
-                float3 g5 = tex2D(_Gradient, float2(s5, 0.5));
-                float3 steppedGrad5 = step(float3(s5, s5, s5), lightFalloff) * g5;
+                float s5a = 0.87;
+                float s5b = 0.93;
+                float3 g5 = tex2D(_Gradient, float2(s5a, 0.5));
+                float3 steppedGrad5 = smoothstep(float3(s5a, s5a, s5a), float3(s5b, s5b, s5b), lightFalloff) * g5;
 
-                float s6 = 0.98;
-                float3 g6 = tex2D(_Gradient, float2(s6, 0.5));
-                float3 steppedGrad6 = step(float3(s6, s6, s6), lightFalloff) * g6;
+                float s6a = 0.95;
+                float s6b = 0.999;
+                float3 g6 = tex2D(_Gradient, float2(s6a, 0.5));
+                float3 steppedGrad6 = smoothstep(float3(s6a, s6a, s6a), float3(s6b, s6b, s6b), lightFalloff) * g6;
 
                 float3 final = g0 + max(steppedGrad6, max(steppedGrad5, max(steppedGrad4, max(steppedGrad3, max(steppedGrad1, steppedGrad2)))));
 
@@ -127,7 +133,7 @@ Shader "SamStrong/CustomizableToon"
                 //     grad = tex2D(_Gradient, float2(0.9, 0.5));
                 // }
 
-                float3 test = tex2D(_Gradient, float2(s3, 0.5));
+                float3 test = tex2D(_Gradient, float2(s3a, 0.5));
                 
                 return float4 (final, 0);
             }

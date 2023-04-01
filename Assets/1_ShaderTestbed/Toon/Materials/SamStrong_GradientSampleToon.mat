@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SamStrong_CustomizableToon
+  m_Name: SamStrong_GradientSampleToon
   m_Shader: {fileID: 4800000, guid: 2f8228d4d0c564a87904b694963a9c36, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
