@@ -45,7 +45,7 @@ Shader "SamStrong/BasicSpecular"
             {
                 VertexOutput o;
                 o.uv0 = v.uv0;
-                o.normal = v.normal;
+                o.normal = UnityObjectToWorldNormal(v.normal);
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex);
                 o.clipSpacePos = UnityObjectToClipPos(v.vertex);
                 return o;
