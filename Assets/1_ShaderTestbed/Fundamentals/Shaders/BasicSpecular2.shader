@@ -1,4 +1,4 @@
-Shader "SamStrong/BasicSpecular"
+Shader "SamStrong/BasicSpecular2"
 {
     Properties
     {
@@ -51,38 +51,48 @@ Shader "SamStrong/BasicSpecular"
                 return o;
             }
 
-            float4 frag (VertexOutput o) : SV_Target
+            float3 getDiffuseLight(float3 normal)
             {
-                float2 uv = o.uv0;
-                float3 normal = normalize(o.normal); // Interpolated
-
-
-                // Direct Light
                 float3 lightDir = _WorldSpaceLightPos0.xyz;
                 float3 lightColor = _LightColor0.rgb;
                 float lightFalloff = max(0, dot(lightDir, normal));
                 float3 directDiffuseLight = lightColor * lightFalloff;
 
-                // Ambient Light
+                return directDiffuseLight;
+            }
+
+            float3 getAmbientLight(float3 normal)
+            {
                 float3 ambientLight = float3(0.1, 0.1, 0.1);
 
-                // Direct Specular Light
+                float3 a = ShadeSH9(float4(normal, 1.0));
+
+                return a;
+            }
+
+            float3 getSpecularLight(float3 normal, float3 worldPos)
+            {
                 float3 camPos = _WorldSpaceCameraPos;
-                float3 fragToCam = camPos - o.worldPos;
+                float3 fragToCam = camPos - worldPos;
                 float3 viewDir = normalize(fragToCam);
- 
                 float3 viewReflect = reflect(-viewDir, normal);
                 
- 
-                float specularFalloff = max(0, dot(viewReflect, lightDir));
-
+                float specularFalloff = max(0, dot(viewReflect, _WorldSpaceLightPos0.xyz));
                 specularFalloff = pow(specularFalloff, _Gloss);
 
-                float3 directSpecular = specularFalloff * lightColor;
+                return specularFalloff;
+            }
 
+            float4 frag (VertexOutput o) : SV_Target
+            {
+                float2 uv = o.uv0;
+                float3 normal = normalize(o.normal); // Interpolated
 
-                // Composite
-                float diffuseLight = ambientLight + directDiffuseLight;
+                float3 diffuse = getDiffuseLight(normal);
+                float3 ambient = getAmbientLight(normal);
+                float3 specular = getSpecularLight(normal, o.worldPos);
+                float3 directSpecular = specular * _LightColor0.rgb;
+                float3 diffuseLight = ambient + diffuse;
                 float3 finalSurfaceColor = diffuseLight * _Color.rgb + directSpecular;
                 
                 return float4 (finalSurfaceColor, 0);
