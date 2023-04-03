@@ -95,8 +95,10 @@ Shader "SamStrong/CustomToon3Tone"
 
                 diffuseLight += directSpecular;
 
+                float lightFalloff = max(0, dot(_WorldSpaceLightPos0.xyz, normal));
+
                 float3 shadow = _Shadow;
-                float3 StoM = smoothstep(_ShadowThreshold, _ShadowThreshold + _Softness, diffuseLight.g) * _Midtone;
+                float3 StoM = smoothstep(_ShadowThreshold, _ShadowThreshold + _Softness, lightFalloff) * _Midtone;
                 float3 MtoH = smoothstep(_HighlightThreshold, _HighlightThreshold + _Softness, directSpecular.g) * _Highlight;
 
                 float3 toon = clamp(max(MtoH, max(shadow, StoM)), 0, 1);
