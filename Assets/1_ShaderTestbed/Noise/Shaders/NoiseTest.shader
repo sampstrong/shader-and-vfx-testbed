@@ -4,6 +4,7 @@ Shader "Unlit/NoiseTest"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _NoiseScale ("Noise Scale", Float) = 1
+        [HDR] _EdgeColor ("Edge Color", Color) = (1,1,1,1)
     }
     SubShader
     {
@@ -37,6 +38,7 @@ Shader "Unlit/NoiseTest"
             sampler2D _MainTex;
             float4 _MainTex_ST;
             float _NoiseScale;
+            float4 _EdgeColor;
 
             v2f vert (appdata v)
             {
@@ -60,7 +62,8 @@ Shader "Unlit/NoiseTest"
                 }
                 if (finalColor.r > 0.5 || finalColor.r < 0.1)
                 {
-                    finalColor = fixed4(0.2, 0.8, 0.9, 1);
+                    // finalColor = fixed4(0.2, 0.8, 0.9, 1);
+                    finalColor = _EdgeColor;
                 }
                 else
                 {

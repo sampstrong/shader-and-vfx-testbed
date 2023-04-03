@@ -27,5 +27,6 @@ Material:
     m_Ints: []
     m_Floats:
     - _NoiseScale: 1.74
-    m_Colors: []
+    m_Colors:
+    - _EdgeColor: {r: 0, g: 1.8443027, b: 1.5932457, a: 1}
   m_BuildTextureStacks: []
