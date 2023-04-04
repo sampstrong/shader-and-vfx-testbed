@@ -137,7 +137,6 @@ Shader "SamStrong/BasicSpecular3"
 
             float3 getDiffuseLight(float3 normal)
             {
-                
                 float3 lightDir = _WorldSpaceLightPos0.xyz;
                 float3 lightColor = _LightColor0.rgb;
                 float lightFalloff = max(0, dot(lightDir, normal));
@@ -169,7 +168,7 @@ Shader "SamStrong/BasicSpecular3"
             float4 frag (VertexOutput o) : SV_Target
             {
                 float2 uv = o.uv0;
-                float3 normal = normalize(o.normal); // Interpolated
+                float3 normal = normalize(o.normal);
 
                 float3 diffuse = getDiffuseLight(normal);
                 float3 ambient = getAmbientLight(normal);

@@ -1,4 +1,4 @@
-Shader "SamStrong/FresnelGlowGradientClean"
+Shader "SamStrong/FresnelGlowGradientCleanFullyLit"
 {
     Properties
     {
@@ -8,6 +8,8 @@ Shader "SamStrong/FresnelGlowGradientClean"
         
         _Gloss ("Roughness", Range(0.0001, 1)) = 0.1
         _GlossColor ("Specular Color", Color) = (1,1,1,0)
+        
+        _Shading("Shading Override", Range(0, 1)) = 1
         
         _GradientTex ("Gradient Texture", 2D) = "white" {}
         
@@ -58,7 +60,7 @@ Shader "SamStrong/FresnelGlowGradientClean"
             float _Gloss;
             float4 _GlossColor;
             float _Transparency;
-            
+            float _Shading;
 
             v2f vert (appdata v)
             {
@@ -77,31 +79,53 @@ Shader "SamStrong/FresnelGlowGradientClean"
                 return o;
             }
 
+            float3 getDiffuseLight(float3 normal)
+            {
+                float3 lightDir = _WorldSpaceLightPos0.xyz;
+                float3 lightColor = _LightColor0.rgb;
+                float lightFalloff = max(0, dot(lightDir, normal));
+                float3 directDiffuseLight = lightColor * lightFalloff;
+
+                return directDiffuseLight;
+            }
+
+            float3 getAmbientLight(float3 normal)
+            {
+                float3 a = ShadeSH9(float4(normal, 1.0));
+
+                return a;
+            }
+
+            float3 getSpecularLight(float3 normal, float3 worldPos)
+            {
+                float3 camPos = _WorldSpaceCameraPos;
+                float3 fragToCam = camPos - worldPos;
+                float3 viewDir = normalize(fragToCam);
+                float3 viewReflect = reflect(-viewDir, normal);
+                
+                float specularFalloff = max(0, dot(viewReflect, _WorldSpaceLightPos0.xyz));
+                specularFalloff = pow(specularFalloff, _Gloss);
+
+                return specularFalloff;
+            }
+
             fixed4 frag (v2f i) : SV_Target
             {
-                float3 finalNormal = i.normal;
+                float3 normal = i.normal;
                 #if NORMAL_MAP_ON
                     float3 normalMap = UnpackNormal(tex2D(_NormalMap, i.uv));
-                    finalNormal = normalMap.r * i.tangent + normalMap.g * i.bitangent + normalMap.b * i.normal;
+                    normal = normalMap.r * i.tangent + normalMap.g * i.bitangent + normalMap.b * i.normal;
                 #endif
 
-                
-                // Direct Light
-                float3 lightDir = _WorldSpaceLightPos0.xyz;
-                
-                
-                // Direct Specular Light
-                float3 camPos = _WorldSpaceCameraPos;
-                float3 fragToCam = camPos - i.worldPos;
-                float3 viewDir = normalize(fragToCam);
-
-                float3 viewReflect = reflect(-viewDir, finalNormal);
-                float specularFalloff = max(0, dot(viewReflect, lightDir));
-                specularFalloff = pow(specularFalloff, _Gloss);
-                float3 directSpecular = specularFalloff * _GlossColor;
+                // Lighting
+                float3 diffuse = getDiffuseLight(normal);
+                float3 ambient = getAmbientLight(normal);
+                float3 specular = getSpecularLight(normal, i.worldPos);
+                float3 directSpecular = specular * _GlossColor;
+                float3 diffuseLight = ambient + diffuse;
 
                 
-                float fresnelAmount = 1 - max(0.0, dot(finalNormal, i.viewDir));
+                float fresnelAmount = 1 - max(0.0, dot(normal, i.viewDir));
                 fresnelAmount = pow(fresnelAmount, _FresnelRamp) * _FresnelIntensity;
                 
                 
@@ -110,7 +134,7 @@ Shader "SamStrong/FresnelGlowGradientClean"
 
 
                 float3 finalColor = fresnelAmount * gradient;
-                finalColor = finalColor + directSpecular;
+                finalColor = (finalColor + directSpecular) * max(float3(_Shading, _Shading, _Shading), (diffuseLight + fresnelAmount / 4) * (ambient * 2) + (fresnelAmount * diffuseLight));
 
                 float alpha = lerp(1.0, fresnelAmount, _Transparency);
                 
