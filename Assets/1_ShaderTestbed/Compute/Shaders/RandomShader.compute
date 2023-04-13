@@ -1,0 +1,21 @@
+#pragma kernel CSMain
+
+struct Cube
+{
+    float3 position;
+    float4 color;
+};
+
+RWStructuredBuffer<Cube> cubes;
+float resolution;
+
+[numthreads(10,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    float xPos = id.x / resolution;
+    Cube cube = cubes[id.x];
+    cube.color = float4(xPos, 0.0, 0.0, 1.0);
+    cube.position.z = sin(xPos * 20) * 5;
+
+    cubes[id.x] = cube;
+}
