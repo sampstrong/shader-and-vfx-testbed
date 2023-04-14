@@ -1,0 +1,54 @@
+#pragma kernel CSMain
+
+struct Particle
+{
+    float3 position;
+    float3 direction;
+    float4 color;
+    float angle;
+    float radius;
+    float yOffset;
+};
+
+RWStructuredBuffer<Particle> particleBuffer;
+float count;
+float deltaTime;
+float4 camPos;
+
+float rand(float2 co)
+{
+    return(frac(sin(dot(co.xy, float2(12.9898, 78.233))) * 43758.5453)) * 1;
+}
+
+[numthreads(10,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    Particle particle = particleBuffer[id.x];
+    
+    float speed = 0.5;
+    float angle = particle.angle + deltaTime * speed;
+    
+    float x = sin(angle * 0.1) * particle.radius;
+    float z = cos(angle * 0.1) * particle.radius;
+    
+    // float y = sin((particle.angle) + deltaTime * speed) *
+    // sin(particle.radius + deltaTime * speed);
+    
+    // float y = sin((deltaTime * speed) + (x * z)) *
+    // sin((deltaTime * speed) + particle.radius) *
+    // sin((particle.angle) + deltaTime * speed);
+    
+    float y = sin((deltaTime * speed) + (x * z));
+
+    particle.position.x = x;
+    particle.position.y = y;
+    particle.position.z = z;
+
+    float3 direction = normalize(particle.position - camPos.xyz);
+    particle.direction = direction;
+
+    particle.angle = angle;
+    particle.color = (float4(x, y, z, 1) / particle.radius) * 0.5 + 0.5;
+
+    particleBuffer[id.x] = particle;
+}
