@@ -8,14 +8,30 @@ struct Cube
 
 RWStructuredBuffer<Cube> cubes;
 float resolution;
+float repetitions;
+
+float rand(float2 co)
+{
+    return(frac(sin(dot(co.xy, float2(12.9898, 78.233))) * 43758.5453)) * 1;
+}
 
 [numthreads(10,1,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
     float xPos = id.x / resolution;
     Cube cube = cubes[id.x];
-    cube.color = float4(xPos, 0.0, 0.0, 1.0);
-    cube.position.z = sin(xPos * 20) * 5;
+
+    for (int i = 0; i < repetitions; i++)
+    {
+        float zPos = rand(float2(xPos, cube.position.z));
+        cube.position.z = zPos;
+
+        float r = rand(float2(cube.color.r, cube.color.g));
+        float g = rand(float2(cube.color.g, cube.color.b));
+        float b = rand(float2(cube.color.b, cube.color.r));
+    
+        cube.color = float4(r, g, b, 1.0);
+    }
 
     cubes[id.x] = cube;
 }

@@ -67,6 +67,7 @@ public class RandomCubes : MonoBehaviour
 
         _computeShader.SetBuffer(0, "cubes", cubesBuffer);
         _computeShader.SetFloat("resolution", data.Length);
+        _computeShader.SetFloat("repetitions", _repetitions);
         _computeShader.Dispatch(0, data.Length / 10, 1, 1);
         
         cubesBuffer.GetData(data);
