@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: IridescencePack_IridescentConfigurable 1
+  m_Name: IridescencePack_IridescentConfigurableTransparent
   m_Shader: {fileID: 4800000, guid: a7b6e7a052fd942fba248a8d4211fa2c, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -41,9 +41,9 @@ Material:
     - _Color4Threshold: 0
     - _FresnelIntensity: 1.12
     - _FresnelRamp: 2.23
-    - _Gloss: 1
+    - _Gloss: 0.31
     - _Shading: 1
-    - _Transparency: 0
+    - _Transparency: 0.961
     m_Colors:
     - _Color1: {r: 1, g: 0, b: 0.5, a: 0}
     - _Color2: {r: 1, g: 0.84015507, b: 0.09803921, a: 1}

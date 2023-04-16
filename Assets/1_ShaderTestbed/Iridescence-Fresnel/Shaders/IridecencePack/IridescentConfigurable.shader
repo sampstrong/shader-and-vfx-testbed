@@ -4,6 +4,9 @@ Shader "IridescencePack/IridescentConfigurable"
     {
         _MainTex ("Texture", 2D) = "white" {}
         
+        
+        [Header(COLOR SELECTION)]
+        [Space(10)]
         _Color1 ("Color1", Color) = (0.5,0,1,0)
         _Color1Threshold ("Color1/Color2 Threshold", Range(0,1)) = 0.05
         _Color2 ("Color2", Color) = (0.8,1,0,1)
@@ -11,17 +14,24 @@ Shader "IridescencePack/IridescentConfigurable"
         _Color3 ("Color3", Color) = (1,0.2,0.3,1)
         _Color3Threshold ("Color3/Color4 Threshold", Range(0,1)) = 0.4
         _Color4 ("Color4", Color) = (0.1,0.4,1,1)
+        [Space(20)]
         
-        _Transparency("Transparency", Range(0, 1)) = 1
-        
-        _Gloss ("Roughness", Range(0.0001, 1)) = 0.1
-        _GlossColor ("Specular Color", Color) = (1,1,1,0)
-        
-        _Shading("Shading Override", Range(0, 1)) = 1
-        
+        [Header(EFFECT PROPERTIES)]
+        [Space(10)]
         _FresnelIntensity("Fresnel Intensity", Range(0, 10)) = 0 
         _FresnelRamp("Fresnel Ramp", Range(0, 10)) = 0 
+        [Space(20)]
         
+        [Header(LIGHTING PROPERTIES)]
+        [Space(10)]
+        _GlossColor ("Specular Color", Color) = (1,1,1,0)
+        _Gloss ("Roughness", Range(0.0001, 1)) = 0.1
+        _Shading("Shading Override", Range(0, 1)) = 1
+        _Transparency("Transparency", Range(0, 1)) = 1
+        [Space(20)]
+        
+        [Header(NORMAL MAP)]
+        [Space(10)]
         [Toggle] NORMAL_MAP ("Normal Mapping", float) = 0
         _NormalMap ("Normal Map", 2D) = "white" {}
     }
@@ -30,6 +40,7 @@ Shader "IridescencePack/IridescentConfigurable"
         Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
         LOD 100
         Blend SrcAlpha OneMinusSrcAlpha
+        Cull Back
 
         Pass
         {
@@ -59,6 +70,7 @@ Shader "IridescencePack/IridescentConfigurable"
                 float3 worldPos : TEXCOORD5;
             };
 
+            
             sampler2D _MainTex, _NormalMap, _GradientTex;
             float4 _MainTex_ST;
             float4 _Color1, _Color2, _Color3, _Color4;
