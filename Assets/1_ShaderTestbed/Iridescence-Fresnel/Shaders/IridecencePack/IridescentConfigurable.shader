@@ -33,7 +33,7 @@ Shader "IridescencePack/IridescentConfigurable"
         [Header(NORMAL MAP)]
         [Space(10)]
         [Toggle] NORMAL_MAP ("Normal Mapping", float) = 0
-        _NormalMap ("Normal Map", 2D) = "white" {}
+        [NoScaleOffset] _NormalMap ("Normal Map", 2D) = "white" {}
     }
     SubShader
     {
@@ -72,7 +72,7 @@ Shader "IridescencePack/IridescentConfigurable"
 
             
             sampler2D _MainTex, _NormalMap, _GradientTex;
-            float4 _MainTex_ST;
+            float4 _MainTex_ST, _NormalMap_ST;
             float4 _Color1, _Color2, _Color3, _Color4;
             float _Color1Threshold, _Color2Threshold, _Color3Threshold, _Color4Threshold;
             float _FresnelIntensity, _FresnelRamp;
@@ -173,10 +173,15 @@ Shader "IridescencePack/IridescentConfigurable"
                 // gradient
                 float3 grad = gradient(fresnelAmount);
 
+                // texture
+                float4 tex = tex2D(_MainTex, i.uv);
+
 
                 float3 finalColor = grad;
                 finalColor = finalColor + directSpecular;
                 finalColor = (finalColor + directSpecular) * max(float3(_Shading, _Shading, _Shading), (diffuseLight + fresnelAmount / 4) * (ambient * 2) + (fresnelAmount * diffuseLight));
+
+                finalColor *= tex;
 
                 float alpha = lerp(1.0, fresnelAmount, _Transparency);
                 
