@@ -2,8 +2,13 @@ Shader "IridescencePack/IridescentConfigurable"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
-        
+        [Header(TEXTURES)]
+        [Space(10)]
+        _MainTex ("Main Texture", 2D) = "white" {}
+        [Space(10)]
+        [Toggle] NORMAL_MAP ("Normal Mapping", float) = 0
+        [NoScaleOffset] _NormalMap ("Normal Map", 2D) = "white" {}
+        [Space(20)]
         
         [Header(COLOR SELECTION)]
         [Space(10)]
@@ -28,12 +33,7 @@ Shader "IridescencePack/IridescentConfigurable"
         _Gloss ("Roughness", Range(0.0001, 1)) = 0.1
         _Shading("Shading Override", Range(0, 1)) = 1
         _Transparency("Transparency", Range(0, 1)) = 1
-        [Space(20)]
         
-        [Header(NORMAL MAP)]
-        [Space(10)]
-        [Toggle] NORMAL_MAP ("Normal Mapping", float) = 0
-        [NoScaleOffset] _NormalMap ("Normal Map", 2D) = "white" {}
     }
     SubShader
     {

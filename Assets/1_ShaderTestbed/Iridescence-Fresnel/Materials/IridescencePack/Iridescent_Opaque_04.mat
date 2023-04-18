@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: IridescencePack_IridescentConfigurableTransparent
+  m_Name: Iridescent_Opaque_04
   m_Shader: {fileID: 4800000, guid: a7b6e7a052fd942fba248a8d4211fa2c, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -29,25 +29,25 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: f4dbf731c2fbd4c14a0f94bfea04118b, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - NORMAL_MAP: 0
-    - _Color1Threshold: 0.035
-    - _Color2Threshold: 0.222
-    - _Color3Threshold: 0.606
+    - _Color1Threshold: 0.178
+    - _Color2Threshold: 0.399
+    - _Color3Threshold: 0.56
     - _Color4Threshold: 0
-    - _FresnelIntensity: 1.12
-    - _FresnelRamp: 2.23
-    - _Gloss: 0.31
+    - _FresnelIntensity: 0.83
+    - _FresnelRamp: 0.79
+    - _Gloss: 1
     - _Shading: 1
-    - _Transparency: 0.961
+    - _Transparency: 0
     m_Colors:
-    - _Color1: {r: 1, g: 0, b: 0.5, a: 0}
-    - _Color2: {r: 1, g: 0.84015507, b: 0.09803921, a: 1}
-    - _Color3: {r: 0.2696835, g: 0.21106264, b: 0.8773585, a: 1}
-    - _Color4: {r: 0.13416696, g: 0.18377492, b: 0.4245283, a: 1}
-    - _GlossColor: {r: 1, g: 0.6450441, b: 0.60784316, a: 0}
+    - _Color1: {r: 0.43499184, g: 0, b: 1, a: 0}
+    - _Color2: {r: 0.25883368, g: 0, b: 0.41568628, a: 1}
+    - _Color3: {r: 0.69803923, g: 0, b: 0.5885086, a: 1}
+    - _Color4: {r: 1, g: 0, b: 0.4226308, a: 1}
+    - _GlossColor: {r: 0.36779103, g: 0.68729216, b: 0.8207547, a: 0}
   m_BuildTextureStacks: []
