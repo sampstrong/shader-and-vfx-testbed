@@ -36,6 +36,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _DistortionStrength: 1.7
+    - _EdgeOffset: 0.9
     - _HoleSize: -0.7
     - _NoiseScale: 200
     - _QueueControl: 0
