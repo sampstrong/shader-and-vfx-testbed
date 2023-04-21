@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Iridescent_Opaque_03
+  m_Name: Iridescent_Transparent_04
   m_Shader: {fileID: 4800000, guid: a7b6e7a052fd942fba248a8d4211fa2c, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -43,11 +43,11 @@ Material:
     - _FresnelRamp: 0.79
     - _Gloss: 1
     - _Shading: 1
-    - _Transparency: 0
+    - _Transparency: 0.796
     m_Colors:
     - _Color1: {r: 0, g: 0.5125196, b: 1, a: 0}
     - _Color2: {r: 0, g: 0.0000091048905, b: 0.41509432, a: 1}
     - _Color3: {r: 0.6981132, g: 0.045456544, b: 0, a: 1}
     - _Color4: {r: 1, g: 0.92445683, b: 0, a: 1}
-    - _GlossColor: {r: 0.16887683, g: 0.4401449, b: 0.5188679, a: 0}
+    - _GlossColor: {r: 0.22116414, g: 0.5301571, b: 0.6603774, a: 0}
   m_BuildTextureStacks: []
