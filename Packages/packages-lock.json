@@ -18,6 +18,13 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.demoteam.mesh-to-sdf": {
+      "version": "git@github.com:Unity-Technologies/com.unity.demoteam.mesh-to-sdf.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "8f69f93f605094c5ff5ddb1fb43294e8cfe40165"
+    },
     "com.unity.ext.nunit": {
       "version": "1.0.6",
       "depth": 1,
@@ -160,6 +167,15 @@
       "dependencies": {
         "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0"
+      }
+    },
+    "com.unity.visualeffectgraph": {
+      "version": "12.1.7",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.shadergraph": "12.1.7",
+        "com.unity.render-pipelines.core": "12.1.7"
       }
     },
     "com.unity.visualscripting": {

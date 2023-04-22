@@ -34,7 +34,7 @@ Material:
     - _WaveAmp: 0.2
     - _WaveSpeed: 1
     m_Colors:
-    - _Color: {r: 0, g: 0.082353115, b: 0.5, a: 1}
-    - _DepthColor: {r: 0.05139729, g: 0.24962993, b: 0.5188679, a: 1}
-    - _EdgeColor: {r: 0, g: 0.15601267, b: 0.6792453, a: 1}
+    - _Color: {r: 0, g: 0.02321639, b: 0.14150941, a: 1}
+    - _DepthColor: {r: 0, g: 0.12129382, b: 0.2830189, a: 1}
+    - _EdgeColor: {r: 0, g: 0.0981568, b: 0.4245283, a: 1}
   m_BuildTextureStacks: []
