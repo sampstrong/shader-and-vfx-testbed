@@ -1,4 +1,4 @@
-Shader "Unlit/Noodle"
+Shader "Unlit/NoodleAudio"
 {
     Properties
     {

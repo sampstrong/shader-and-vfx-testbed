@@ -8,14 +8,22 @@ public class AudioNoodle : MonoBehaviour
     [SerializeField] private Material _material;
     [SerializeField] private float _minSpeed = 1.0f;
 
-    private Shader s;
+    [SerializeField] private bool _useAudio = true;
 
     private float _customTime = 0.0f;
 
     public void ControlSpeed()
     {
-        var speed = AudioVisualizeManager.Output_Volume * 10.0f + _minSpeed;
-        _customTime += Time.deltaTime * speed;
+        if (_useAudio)
+        {
+            var speed = AudioVisualizeManager.Output_Volume * 10.0f + _minSpeed;
+            _customTime += Time.deltaTime * speed;
+        }
+        else
+        {
+            _customTime += Time.deltaTime;
+        }
+        
 
         _material.SetFloat("_CustomTime", _customTime);
     }

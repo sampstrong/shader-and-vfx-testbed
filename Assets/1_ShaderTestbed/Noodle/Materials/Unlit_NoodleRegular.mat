@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Unlit_Noodle
-  m_Shader: {fileID: 4800000, guid: 7309b7605fc754fbb8a90f41c268bce8, type: 3}
+  m_Name: Unlit_NoodleRegular
+  m_Shader: {fileID: 4800000, guid: 93109331c50f04e69bdcd42de80ac4ee, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
