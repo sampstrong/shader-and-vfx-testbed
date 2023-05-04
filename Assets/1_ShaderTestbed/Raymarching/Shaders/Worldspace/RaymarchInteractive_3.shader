@@ -1,14 +1,18 @@
-Shader "Raymarch/Interactive_2"
+Shader "Raymarch/Interactive_3"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+    	_MainTexGlow ("MainTex Glow", Float) = 1
+    	[HDR] _MainColor ("Main Color", Color) = (1,1,1,1)
     	_SmoothAmount ("Smooth Amount", Range(0, 0.4)) = 0.1
-    	[HDR] _MainColor("Main Color", Color) = (0.2,0.9,0.3,1)
+    	_FresnelIntensity ("Fresnel Intensity", Range(0, 1)) = 1.0
+        _FresnelRamp ("Fresnel Ramp", Range(0, 10)) = 0.0
+    	
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" } 
+        Tags { "RenderType"="Opaque" }
         LOD 100
 
         Pass
@@ -39,7 +43,6 @@ Shader "Raymarch/Interactive_2"
                 float4 vertex : SV_POSITION;
             	float3 ro : TEXCOORD1;
             	float3 hitPos : TEXCOORD2;
-            	float4 screenPos : TEXCOORD3;
             };
 
             sampler2D _MainTex;
@@ -48,8 +51,9 @@ Shader "Raymarch/Interactive_2"
             uniform int _NumberOfSpheres;
             uniform float4 _Positions[20];
             uniform float4 _Scales[20];
-            sampler2D _CameraOpaqueTexture;
-            fixed4 _MainColor;
+            float _FresnelRamp, _FresnelIntensity;
+            float4 _MainColor;
+            float _MainTexGlow;
             
 
             v2f vert (appdata v)
@@ -59,7 +63,6 @@ Shader "Raymarch/Interactive_2"
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
             	o.ro = _WorldSpaceCameraPos;
             	o.hitPos = mul(unity_ObjectToWorld, v.vertex);
-            	o.screenPos = ComputeScreenPos(v.vertex) * 0.5 + 0.5;
                 return o;
             }
 
@@ -110,6 +113,16 @@ Shader "Raymarch/Interactive_2"
 				return dO;
 			}
 
+            float getFresnel(float3 normal, float3 ro)
+            {
+				float3 viewDir = normalize(ro);
+            	
+	            float fresnelAmount = 1 - max(0.0, dot(normal, viewDir));
+                fresnelAmount = pow(fresnelAmount, _FresnelRamp) * _FresnelIntensity;
+
+            	return fresnelAmount;
+            }
+
 			float3 getNormal(float3 p) {
 				float2 e = float2(1e-2, 0);
 
@@ -122,14 +135,13 @@ Shader "Raymarch/Interactive_2"
 				return normalize(n);
 			}
 
-
             fixed4 frag (v2f i) : SV_Target
             {
                 float2 uv = i.uv - .5;
                 float3 ro = i.ro; 
                 float3 rd = normalize(i.hitPos - ro); //normalize(float3(uv.x, uv.y, 1.0));
 
-            	
+				float3 tex = tex2D(_MainTex, rd);
             	
                 fixed4 col = 0;
 
@@ -138,17 +150,16 @@ Shader "Raymarch/Interactive_2"
                 if (d < MAX_DIST){
                     float3 p = ro + rd * d;
                     float3 n = getNormal(p);
-                	float3 r = reflect(rd, n);
-                	n = n * 0.5 + 0.5;
-                	
+                	float f = getFresnel(n, ro);
 
-                	float3 newScreenPos = i.screenPos * n;
-                    float3 reflTex = tex2D(_CameraOpaqueTexture, newScreenPos).rgb;
-                	
-                	reflTex *= _MainColor;
+                	float2 texUv = float2(_Time.y, 0.5);
+            	    
+                	tex *= _MainTexGlow;
 
+                	float3 final = tex * f;
                 	
-                	col.rgb = reflTex;
+                	
+                	col.rgb = final;
                 }
                 else
                 {

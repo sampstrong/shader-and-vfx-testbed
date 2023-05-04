@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Raymarch_Interactive_2
-  m_Shader: {fileID: 4800000, guid: c295d14ee98594c698e88536ebdf2cf4, type: 3}
+  m_Name: Raymarch_Interactive_3
+  m_Shader: {fileID: 4800000, guid: 821b6b67871d54c18a759fa5b79d34bb, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -21,14 +21,15 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: b8600c98739ed495aadd4d71ffd49a4f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _FresnelIntensity: 1
-    - _FresnelRamp: 0
-    - _SmoothAmount: 0.1
+    - _FresnelRamp: 2.49
+    - _MainTexGlow: 10.4
+    - _SmoothAmount: 0.218
     m_Colors:
-    - _MainColor: {r: 0.8, g: 3.6078432, b: 1.1921569, a: 1}
+    - _MainColor: {r: 0, g: 22.363522, b: 0.8196055, a: 1}
   m_BuildTextureStacks: []
