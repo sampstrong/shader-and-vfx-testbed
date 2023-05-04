@@ -12,7 +12,7 @@ Shader "Raymarch/Interactive_3"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Opaque" "Queue"="Transparent" }
         LOD 100
 
         Pass
