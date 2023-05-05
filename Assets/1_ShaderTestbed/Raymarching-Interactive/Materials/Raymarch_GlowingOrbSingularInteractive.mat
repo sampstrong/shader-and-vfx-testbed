@@ -36,5 +36,5 @@ Material:
     - _SmoothAmount: 0.0887
     m_Colors:
     - _BaseColor: {r: 0.2591669, g: 0.44293588, b: 0.6037736, a: 1}
-    - _GlowColor: {r: 1.4980392, g: 0, b: 0, a: 1}
+    - _GlowColor: {r: 0.56765074, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

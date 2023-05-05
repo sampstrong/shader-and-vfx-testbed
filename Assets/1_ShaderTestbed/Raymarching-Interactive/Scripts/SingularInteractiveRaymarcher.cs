@@ -10,6 +10,7 @@ public class SingularInteractiveRaymarcher : MonoBehaviour
     private SphereCollider _collider;
     private Vector4 _objectPosition;
     private float _objectRadius;
+    private Matrix4x4 _objectRotationMatrix;
     
     void Start()
     {
@@ -34,8 +35,12 @@ public class SingularInteractiveRaymarcher : MonoBehaviour
 
         var scale = _object.transform.localScale;
         _objectRadius = scale.x * _scaleFactor;
+
+        var rot = _object.transform.rotation;
+        _objectRotationMatrix = Matrix4x4.Rotate(rot);
         
         _material.SetVector("_Position", _objectPosition);
         _material.SetFloat("_Radius", _objectRadius);
+        _material.SetMatrix("_Rotation", _objectRotationMatrix);
     }
 }

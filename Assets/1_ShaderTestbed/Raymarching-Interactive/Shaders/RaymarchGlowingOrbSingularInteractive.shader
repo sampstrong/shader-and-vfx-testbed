@@ -61,6 +61,7 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
 
             uniform float4 _Position;
             uniform float _Radius;
+            uniform float4x4 _Rotation;
 
             v2f vert (appdata v)
             {
@@ -213,7 +214,10 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
 
 			float getDist(float3 p)
             {
-				float d = orb(p, _Radius, _Position);
+            	p -= _Position;
+				p = mul(p, _Rotation);
+            	
+				float d = orb(p, _Radius, 0.0);
             	
 				return d;
 			}
@@ -272,19 +276,17 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
                 if (d < MAX_DIST)
                 {
                     float3 p = ro + rd * d;
-
-                	
                 	
                     float3 n = getNormal(p);
-                	// float3 l = getLighting(n);
 					float3 l = applyLighting(n, p);
                 	
                 	float f = getFresnel(n, ro);
 
-                	p -= _Position;
+                	// update transforms
                 	
-					
-					// float3 pRot = makeRotation(p, 1.0); // rotation test
+                	p -= _Position;
+                	float3 pRot = mul(p, _Rotation);
+                	
                 	
                 	uv = dot(p, rd); // uv based on ray direction
                 	float cds = dot(uv, uv); // center distance squared
@@ -293,17 +295,18 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
                 	sss = 1.0 - sss;
                 	sss = min(sss, 2.0);
 
-                	float b = ballGyroidSolid(p, _Radius * 1.5, 0);
+                	float b = ballGyroidSolid(pRot, _Radius * 1.5, 0);
                 	sss *= smoothstep(-0.03, 0.0, b);
                 	
                 	col.rgb = l * _BaseColor;
                 	col.rgb += sss * _GlowColor;
 
                 	// surface dots
-                	float noise = 1.0 - clamp(snoise(p * _NoiseScale), 0.6, 0.8);
+                	float noise = 1.0 - clamp(snoise(pRot * _NoiseScale), 0.6, 0.8);
                 	noise = lerp(noise, 0.5, clamp(1.0 - _GlowColor.r * sss, 0.0, 1.0));
-
                 	col.rgb *= noise;
+
+                	
                 }
                 else
                 {
