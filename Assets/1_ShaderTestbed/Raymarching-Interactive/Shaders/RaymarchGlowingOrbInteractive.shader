@@ -1,14 +1,12 @@
-Shader "Raymarch/GlowingOrbBetterLighting"
+Shader "Raymarch/GlowingOrbInteractive"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-    	_BaseColor ("Base Color", Color) = (0.0, 0.4, 0.2, 1.0)
-    	[HDR] _GlowColor ("Glow Color", Color) = (1,0.3,0.3,1)
+    	_BaseColor ("Base Color", Color) = (0.25, 0.44, 0.6, 1.0)
+    	[HDR] _GlowColor ("Glow Color", Color) = (1.5,0.0,0.0,1)
     	_NoiseScale ("Noise Scale", Float) = 1
     	_SmoothAmount ("Smooth Amount", Range(0, 0.2)) = 0.1
-    	_FresnelIntensity ("Fresnel Intensity", Range(0, 10)) = 0.0
-        _FresnelRamp ("Fresnel Ramp", Range(0, 10)) = 0.0
     	_GyroidScale ("Gyroid Scale", Float) = 25.0
     	_GyroidThickness ("Gyroid Thickness", Range(0.0, 0.1)) = 0.05
     	_Gloss ("Gloss", Range(1, 100)) = 50
@@ -47,23 +45,34 @@ Shader "Raymarch/GlowingOrbBetterLighting"
             	float3 hitPos : TEXCOORD2;
             };
 
+            
+
+			// ------ global variables ------
+            
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            float _SmoothAmount;
-            float _FresnelRamp, _FresnelIntensity;
             fixed4 _BaseColor, _GlowColor;
+            
+            float _SmoothAmount;
             float _NoiseScale, _GyroidScale, _GyroidThickness;
             float _Gloss;
+
+            uniform int _NumberOfSpheres;
+            uniform int _SphereID[20];
+            uniform float4 _Positions[20];
+            uniform float4 _Scales[20];
+
+
+            
+            // ------ vertex shader ------
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-            	// o.ro = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos,1)); // object space
-            	// o.hitPos = v.vertex; // object space
-            	o.ro = _WorldSpaceCameraPos; // world space
-            	o.hitPos = mul(unity_ObjectToWorld, v.vertex); // world space
+            	o.ro = _WorldSpaceCameraPos;
+            	o.hitPos = mul(unity_ObjectToWorld, v.vertex);
                 return o;
             }
 
@@ -132,54 +141,121 @@ Shader "Raymarch/GlowingOrbBetterLighting"
 
 
             
-            // ------ raymarching ------
+            // ------ distance functions ------
+
+            float smin(float a, float b, float k) {
+			  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+			  return lerp(b, a, h) - k * h * (1.0 - h);
+			}
             
-            float sphere(float3 p, float r)
+            float sphere(float3 p, float r, float3 offset)
             {
+				p -= offset;
+            	
 	            float d = length(p) - r;
             	return d;
             }
 
-            float ballGyroid(float3 p)
+            float gyroid(float3 p, float3 offset)
             {
+				p -= offset;
+            	
             	float rescaleFactor = _GyroidScale;
 	            p *= rescaleFactor;
-
-            	// float thickness = 0.001;
-            	// thickness = thickness + sin(_Time.y) * 0.005 + 0.02; // pulse
+            	p.y += _Time.y; // animation
             	
-            	float thickness = 0.03; // no pulse
-
-				p.y += _Time.y; // animate
-            	
+            	float thickness = 0.03; 
             	float gyroid = abs(0.7 * dot(sin(p), cos(p.yzx)) / rescaleFactor) - thickness;
             	
             	return gyroid;
             }
 
-			float smin(float a, float b, float k) {
-			  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
-			  return lerp(b, a, h) - k * h * (1.0 - h);
-			}
+            float ballGyroid(float3 p, float r, float3 offset)
+            {
+            	float b = length(p) - r;
+            	b = abs(b) - _GyroidThickness;
+				float g = gyroid(p, offset);
+            	float k = 0.1;
+            	b = smin(b, g, -k);
+
+            	return b;
+            }
+
+            
+
+            float orb(float3 p, float r, float3 offset)
+            {
+            	// update position
+				// p -= offset;
+            	
+            	// main sphere
+            	float d = sphere(p, r, offset);
+
+				// sphere-gyroid ridges
+				float b = ballGyroid(p, r, offset);
+
+            	// combined
+            	float k = 0.1;
+            	d = smin(b, d, k);
+
+            	return d;
+            }
+
+
+
+            // ------ raymarching ------
+
+
 
 			float getDist(float3 p)
             {
-            	// rotation test
-				// p = makeRotation(p, 1.0);
+            	float d = 0.0;
+            	float lastDist = 0.0;
+
+            	if (_NumberOfSpheres <= 0) return 1.0;
             	
-            	// main sphere
-            	float d = sphere(p, 0.4);
+            	for (int i = 0; i < _NumberOfSpheres; i++)
+            	{
+            		float s = sphere(p, _Scales[i], _Positions[i].xyz);
+					if (i == 0)
+					{
+						lastDist = s;
+						continue;
+					}
 
-				// gyroid ridges
-            	float ball = length(p) - .4;
-            	ball = abs(ball) - _GyroidThickness;
-				float g = ballGyroid(p);
-            	float k = 0.1;
-            	ball = smin(ball, g, -k);
-
-            	d = smin(ball, d, k);
+            		d = smin(lastDist, s, _SmoothAmount);
+            		lastDist = d;
+            	}
             	
 				return d;
+			}
+
+            int getMat(float3 p)
+            {
+            	float d = 0.0;
+            	float lastDist = 0.0;
+
+            	if (_NumberOfSpheres <= 0) return 1.0;
+
+            	int mat;
+            	
+            	for (int i = 0; i < _NumberOfSpheres; i++)
+            	{
+            		float s = sphere(p, _Scales[i], _Positions[i].xyz);
+					if (i == 0)
+					{
+						lastDist = s;
+						continue;
+					}
+
+            		d = smin(lastDist, s, _SmoothAmount);
+            		lastDist = d;
+
+            		mat = i;
+            	}
+
+            	// return the index of the object at this position
+				return mat;
 			}
 
 			float rayMarch(float3 ro, float3 rd) {
@@ -193,38 +269,6 @@ Shader "Raymarch/GlowingOrbBetterLighting"
 				}
 				return dO;
 			}
-
-
-            float getDistS(float3 p)
-            {
-            	// main sphere only
-            	float d = sphere(p, 0.4);
-            	
-				return d;
-			}
-
-            float rayMarchS(float3 ro, float3 rd) {
-				float dO = 0;
-				float dS;
-				for (int i = 0; i < MAX_STEPS; i++) {
-					float3 p = ro + rd * dO;
-					dS = getDistS(p);
-					dO += dS;
-					if (dS<SURF_DIST || dO>MAX_DIST) break;
-				}
-				return dO;
-			}
-            
-
-            float getFresnel(float3 normal, float3 ro)
-            {
-				float3 viewDir = normalize(ro);
-            	
-	            float fresnelAmount = 1 - max(0.0, dot(normal, viewDir));
-                fresnelAmount = pow(fresnelAmount, _FresnelRamp) * _FresnelIntensity;
-
-            	return fresnelAmount;
-            }
 
 			float3 getNormal(float3 p) {
 				float2 e = float2(1e-2, 0);
@@ -240,53 +284,58 @@ Shader "Raymarch/GlowingOrbBetterLighting"
 
 
 
+            // ------ fragment shader ------
+
             fixed4 frag (v2f i) : SV_Target
             {
-                float2 uv = i.uv - .5;
-				
-            	
                 float3 ro = i.ro; 
                 float3 rd = normalize(i.hitPos - ro);
 
-            	
-            	
                 fixed4 col = 0;
 
             	float d = rayMarch(ro, rd);
-            	float dS = rayMarchS(ro, rd);
 
                 if (d < MAX_DIST)
                 {
                     float3 p = ro + rd * d;
-                	
-                    float3 n = getNormal(p);
-                	// float3 l = getLighting(n);
-					float3 l = applyLighting(n, p);
-                	
-                	float f = getFresnel(n, ro);
-                	
-					
-					// float3 pRot = makeRotation(p, 1.0); // rotation test
-                	
-                	uv = dot(p, rd); // uv based on ray direction
-                	float cds = dot(uv, uv); // center distance squared
-                	
-                	float sss = smoothstep(0.2, 0.0, cds); // sub-surface scattering
-                	sss = 1.0 - sss;
-                	sss = min(sss, 2.0);
 
-                	float b = ballGyroid(p);
-                	sss *= smoothstep(-0.03, 0.0, b);
-                	
-                	col.rgb = l * _BaseColor;
-                	col.rgb += sss * _GlowColor;
+					int mat = getMat(p);
+                	for (int i = 0; i < _NumberOfSpheres; i++)
+                	{
+                		if (mat == i)
+                		{
+                			float adjustedP = p - _Positions[i];
 
-                	// surface dots
-                	float3 pS = ro + rd * dS;
-                	float noise = 1.0 - clamp(snoise(p * _NoiseScale), 0.6, 0.8);
-                	noise = lerp(noise, 0.5, clamp(1.0 - _GlowColor.r * sss, 0.0, 1.0));
-
-                	col.rgb *= noise;
+                			float3 n = getNormal(p);
+							float3 l = applyLighting(n, p);
+                			
+                			// inner glow
+                			float2 uv = dot(adjustedP, rd); // uv based on ray direction
+                			float cds = dot(uv, uv); // center distance squared
+		
+                			// sub-surface scattering
+                			float sss = smoothstep(0.2, 0.0, cds); 
+                			sss = 1.0 - sss;
+                			sss = min(sss, 2.0);
+		
+                			// // gyroid structure blocking light
+                			// for (int i = 0; i < _NumberOfSpheres; i++)
+                			// {
+                			// 	float b = ballGyroid(p, 0.4, _Positions[i].xyz);
+                			// 	sss *= smoothstep(-0.03, 0.0, b);
+                			// }
+		
+		
+                			// colors
+                			col.rgb = l * _BaseColor;
+                			col.rgb += sss * _GlowColor;
+		
+                			// surface dots/noise
+                			float noise = 1.0 - clamp(snoise(p * _NoiseScale), 0.6, 0.8);
+                			noise = lerp(noise, 0.5, clamp(1.0 - _GlowColor.r * sss, 0.0, 1.0));
+                			col.rgb *= noise;
+                		}
+                	}
                 }
                 else
                 {
