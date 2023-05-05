@@ -1,4 +1,4 @@
-Shader "Raymarch/GlowingOrb"
+Shader "Raymarch/GlowingOrbBetterLighting"
 {
     Properties
     {
@@ -11,6 +11,7 @@ Shader "Raymarch/GlowingOrb"
         _FresnelRamp ("Fresnel Ramp", Range(0, 10)) = 0.0
     	_GyroidScale ("Gyroid Scale", Float) = 25.0
     	_GyroidThickness ("Gyroid Thickness", Range(0.0, 0.1)) = 0.05
+    	_Gloss ("Gloss", Range(1, 100)) = 50
     }
     SubShader
     {
@@ -52,17 +53,87 @@ Shader "Raymarch/GlowingOrb"
             float _FresnelRamp, _FresnelIntensity;
             fixed4 _BaseColor, _GlowColor;
             float _NoiseScale, _GyroidScale, _GyroidThickness;
+            float _Gloss;
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-            	o.ro = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos,1));
-            	o.hitPos = v.vertex;
+            	// o.ro = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos,1)); // object space
+            	// o.hitPos = v.vertex; // object space
+            	o.ro = _WorldSpaceCameraPos; // world space
+            	o.hitPos = mul(unity_ObjectToWorld, v.vertex); // world space
                 return o;
             }
 
+
+            // ------ lighting ------
+            
+            float3 getDiffuseLight(float3 normal)
+            {
+                float3 lightDir = _WorldSpaceLightPos0.xyz;
+                float3 lightColor = _LightColor0.rgb;
+                float lightFalloff = max(0, dot(lightDir, normal));
+                float3 directDiffuseLight = lightColor * lightFalloff;
+
+                return directDiffuseLight;
+            }
+
+            float3 getAmbientLight(float3 normal)
+            {
+                float3 a = ShadeSH9(float4(normal, 1.0));
+
+                return a;
+            }
+
+            float3 getSpecularLight(float3 normal, float3 worldPos)
+            {
+                float3 camPos = _WorldSpaceCameraPos;
+                float3 fragToCam = camPos - worldPos;
+                float3 viewDir = normalize(fragToCam);
+                float3 viewReflect = reflect(-viewDir, normal);
+                
+                float specularFalloff = max(0, dot(viewReflect, _WorldSpaceLightPos0.xyz));
+                specularFalloff = pow(specularFalloff, _Gloss);
+
+                return specularFalloff;
+            }
+
+            float3 applyLighting(float3 normal, float3 worldPos)
+            {
+	            float3 diffuse = getDiffuseLight(normal);
+                float3 ambient = getAmbientLight(normal);
+                float3 specular = getSpecularLight(normal, worldPos);
+                float3 directSpecular = specular * _LightColor0.rgb;
+                float3 diffuseLight = ambient + diffuse;
+                float3 finalSurfaceColor = diffuseLight * _BaseColor.rgb + directSpecular;
+
+            	return finalSurfaceColor;
+            }
+
+
+
+            // ------ transformations ------
+            
+            float2x2 rotate2d(float _angle)
+			{
+			    return float2x2(cos(_angle),-sin(_angle),
+			                    sin(_angle),cos(_angle));
+			}
+
+            float3 makeRotation(float3 p, float speed)
+            {
+                float2x2 rotation = rotate2d(_Time.y * speed);
+                p.xz = mul(rotation, p.xz);
+
+            	return p;
+            }
+
+
+            
+            // ------ raymarching ------
+            
             float sphere(float3 p, float r)
             {
 	            float d = length(p) - r;
@@ -85,7 +156,6 @@ Shader "Raymarch/GlowingOrb"
             	
             	return gyroid;
             }
-            
 
 			float smin(float a, float b, float k) {
 			  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
@@ -94,6 +164,9 @@ Shader "Raymarch/GlowingOrb"
 
 			float getDist(float3 p)
             {
+            	// rotation test
+				p = makeRotation(p, 1.0);
+            	
             	// main sphere
             	float d = sphere(p, 0.4);
 
@@ -141,7 +214,6 @@ Shader "Raymarch/GlowingOrb"
 				}
 				return dO;
 			}
-
             
 
             float getFresnel(float3 normal, float3 ro)
@@ -166,16 +238,7 @@ Shader "Raymarch/GlowingOrb"
 				return normalize(n);
 			}
 
-            float3 getLighting(float3 normalVec)
-            {
-            	float3 lightDir = _WorldSpaceLightPos0.xyz;
-            	float3 lightCol = _LightColor0.rgb;
-            	float3 ambient = float3(.1, .1, .1);
-	            float3 falloff = max(0.0, dot(normalVec, lightDir));
-            	float3 lighting = (falloff * lightCol) + ambient;
-            	
-            	return lighting;
-            }
+
 
             fixed4 frag (v2f i) : SV_Target
             {
@@ -195,10 +258,15 @@ Shader "Raymarch/GlowingOrb"
                 if (d < MAX_DIST)
                 {
                     float3 p = ro + rd * d;
+                	
                     float3 n = getNormal(p);
-                	float3 l = getLighting(n);
+                	// float3 l = getLighting(n);
+					float3 l = applyLighting(n, p);
+                	
                 	float f = getFresnel(n, ro);
-
+                	
+					
+					float3 pRot = makeRotation(p, 1.0); // rotation test
                 	
                 	uv = dot(p, rd); // uv based on ray direction
                 	float cds = dot(uv, uv); // center distance squared
@@ -207,7 +275,7 @@ Shader "Raymarch/GlowingOrb"
                 	sss = 1.0 - sss;
                 	sss = min(sss, 2.0);
 
-                	float b = ballGyroid(p);
+                	float b = ballGyroid(pRot);
                 	sss *= smoothstep(-0.03, 0.0, b);
                 	
                 	col.rgb = l * _BaseColor;
@@ -215,7 +283,7 @@ Shader "Raymarch/GlowingOrb"
 
                 	// surface dots
                 	float3 pS = ro + rd * dS;
-                	float noise = 1.0 - clamp(snoise(p * _NoiseScale), 0.6, 0.8);
+                	float noise = 1.0 - clamp(snoise(pRot * _NoiseScale), 0.6, 0.8);
                 	noise = lerp(noise, 0.5, clamp(1.0 - _GlowColor.r * sss, 0.0, 1.0));
 
                 	col.rgb *= noise;

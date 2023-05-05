@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Raymarch_GlowingOrb
-  m_Shader: {fileID: 4800000, guid: 3e542277b825e42d79a515d757fc9f32, type: 3}
+  m_Name: Raymarch_GlowingOrbBetterLighting
+  m_Shader: {fileID: 4800000, guid: a358c49de538b4f368e2fed89ca0cfa6, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -28,11 +28,12 @@ Material:
     m_Floats:
     - _FresnelIntensity: 5.46
     - _FresnelRamp: 0.65
+    - _Gloss: 1.5
     - _GyroidScale: 15
     - _GyroidThickness: 0.05
     - _NoiseScale: 106.3
     - _SmoothAmount: 0.0887
     m_Colors:
-    - _BaseColor: {r: 0.259167, g: 0.44293594, b: 0.6037736, a: 1}
+    - _BaseColor: {r: 0.25916693, g: 0.4429359, b: 0.6037736, a: 1}
     - _GlowColor: {r: 1.4980392, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
