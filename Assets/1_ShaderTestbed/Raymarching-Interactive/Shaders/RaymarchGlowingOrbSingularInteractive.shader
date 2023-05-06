@@ -258,16 +258,27 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
 			}
 
 
+            float subSurfaceScattering(float3 p, float3 rotatedP, float3 rd)
+            {
+            	float2 uv = dot(p, rd); // uv based on ray direction
+                float cds = dot(uv, uv); // center distance squared
+                
+                float sss = smoothstep(0.2, 0.0, cds); // sub-surface scattering
+                sss = 1.0 - sss;
+                sss = min(sss, 2.0);
+                float b = ballGyroidSolid(rotatedP, _Radius * 1.5, 0);
+                sss *= smoothstep(-0.03, 0.0, b);
+
+            	return sss;
+            }
+
+
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float2 uv = i.uv - .5;
-				
-            	
                 float3 ro = i.ro; 
                 float3 rd = normalize(i.hitPos - ro);
 
-            	
             	
                 fixed4 col = 0;
 
@@ -288,17 +299,10 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
                 	float3 pRot = mul(p, _Rotation);
                 	
                 	
-                	uv = dot(p, rd); // uv based on ray direction
-                	float cds = dot(uv, uv); // center distance squared
+					// sub surface scattering
+					float sss = subSurfaceScattering(p, pRot, rd);
                 	
-                	float sss = smoothstep(0.2, 0.0, cds); // sub-surface scattering
-                	sss = 1.0 - sss;
-                	sss = min(sss, 2.0);
-
-                	float b = ballGyroidSolid(pRot, _Radius * 1.5, 0);
-                	sss *= smoothstep(-0.03, 0.0, b);
-                	
-                	col.rgb = l * _BaseColor;
+                    col.rgb = l * _BaseColor;
                 	col.rgb += sss * _GlowColor;
 
                 	// surface dots
