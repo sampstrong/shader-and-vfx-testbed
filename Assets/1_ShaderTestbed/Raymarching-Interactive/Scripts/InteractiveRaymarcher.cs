@@ -53,8 +53,8 @@ public class InteractiveRaymarcher : MonoBehaviour
         }
         
         _material.SetVectorArray("_Positions", _objectPositions);
-        _material.SetVectorArray("_Scales", _objectScales);
-        _material.SetInt("_NumberOfSpheres", _objects.Length);
+        _material.SetVectorArray("_Sizes", _objectScales);
+        _material.SetInt("_NumberOfObjects", _objects.Length);
     }
     
     // more efficient to run this code within a singular loop above

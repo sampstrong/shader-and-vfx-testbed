@@ -1,4 +1,4 @@
-Shader "Raymarch/GlowingOrbSingularInteractive"
+Shader "Raymarch/GlowingOrbSingularInteractiveArray"
 {
     Properties
     {
@@ -59,9 +59,9 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
             float _ScatteringRadius;
             float _TestScale = 0.4;
 
-            uniform float4 _Position;
-            uniform float _Radius;
-            uniform float4x4 _Rotation;
+            uniform float4 _Position[1];
+            uniform float _Radius[1];
+            uniform float4x4 _Rotation[1];
 
             v2f vert (appdata v)
             {
@@ -146,18 +146,19 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
 			  return lerp(b, a, h) - k * h * (1.0 - h);
 			}
             
-            float sphere(float3 p, float r, float3 offset)
+            float sphere(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
             {
-				p -= offset;
+				p -= worldPos;
+            	p = mul(p, rotMatrix);
             	
 	            float d = length(p) - r;
             	return d;
             }
 
-            float gyroid(float3 p, float3 offset)
+            float gyroid(float3 p, float3 worldPos, float4x4 rotMatrix)
             {
-				p -= offset;
-            	// p += _Position; // keeps gyroid in one place
+				p -= worldPos;
+            	p = mul(p, rotMatrix);
             	
             	float rescaleFactor = _GyroidScale;
 	            p *= rescaleFactor;
@@ -170,23 +171,23 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
             	return gyroid;
             }
 
-            float ballGyroidHollow(float3 p, float r, float3 offset)
+            float ballGyroidHollow(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
             {
 	            // sphere shell gyroid
-            	float s = sphere(p, r, offset);
+            	float s = sphere(p, r, worldPos, rotMatrix);
             	s = abs(s) - _GyroidThickness;
-				float g = gyroid(p, offset);
+				float g = gyroid(p, worldPos, rotMatrix);
             	float k = 0.1;
             	s = smin(s, g, -k);
 
             	return s;
             }
 
-            float ballGyroidSolid(float3 p, float r, float3 offset)
+            float ballGyroidSolid(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
             {
 	            // sphere shell gyroid
-            	float s = sphere(p, r, offset);
-				float g = gyroid(p, offset);
+            	float s = sphere(p, r, worldPos, rotMatrix);
+				float g = gyroid(p, worldPos, rotMatrix);
             	float k = 0.1;
             	s = smin(s, g, -k);
 
@@ -194,13 +195,13 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
             }
             
 
-			float orb(float3 p, float r, float3 offset)
+			float orb(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
             {
 	            // main sphere
-            	float d = sphere(p, r, offset);
+            	float d = sphere(p, r, worldPos, rotMatrix);
 
             	// gyroid ridges
-            	float s = ballGyroidHollow(p, r, offset);
+            	float s = ballGyroidHollow(p, r, worldPos, rotMatrix);
 
             	// combined
             	float k = 0.1;
@@ -215,10 +216,10 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
 
 			float getDist(float3 p)
             {
-            	p -= _Position;
-				p = mul(p, _Rotation);
+            	// p -= _Position;
+				// p = mul(p, _Rotation);
             	
-				float d = orb(p, _Radius, 0.0);
+				float d = orb(p, _Radius[0], _Position[0], _Rotation[0]);
             	
 				return d;
 			}
@@ -259,7 +260,7 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
 			}
 
 
-            float subSurfaceScattering(float3 p, float3 rotatedP, float3 rd)
+            float subSurfaceScattering(float3 p, float3 rd)
             {
             	float2 uv = dot(p, rd); // uv based on ray direction
                 float cds = dot(uv, uv); // center distance squared
@@ -267,7 +268,7 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
                 float sss = smoothstep(0.2, 0.0, cds); // sub-surface scattering
                 sss = 1.0 - sss;
                 sss = min(sss, 2.0);
-                float b = ballGyroidSolid(rotatedP, _Radius * 1.5, 0);
+                float b = ballGyroidSolid(p, _Radius[0] * 1.5, 0, _Rotation[0]);
                 sss *= smoothstep(-0.03, 0.0, b);
 
             	return sss;
@@ -293,12 +294,12 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
 					float3 l = applyLighting(n, p);
 
                 	// update transforms
-                	p -= _Position;
-                	float3 pRot = mul(p, _Rotation);
+                	p -= _Position[0];
+                	float3 pRot = mul(p, _Rotation[0]);
                 	
                 	
 					// sub surface scattering
-					float sss = subSurfaceScattering(p, pRot, rd);
+					float sss = subSurfaceScattering(p, rd);
                 	
                     col.rgb = l * _BaseColor;
                 	col.rgb += sss * _GlowColor;

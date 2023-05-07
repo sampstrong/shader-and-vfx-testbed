@@ -1,20 +1,21 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [ExecuteInEditMode]
 public class SingularInteractiveRaymarcher : MonoBehaviour
 {
     [SerializeField] private Material _material;
-    [SerializeField] private GameObject _object;
+    [SerializeField] private GameObject[] _objects;
     [SerializeField] private float _scaleFactor = 0.35f;
 
-    private SphereCollider _collider;
-    private Vector4 _objectPosition;
-    private float _objectRadius;
-    private Matrix4x4 _objectRotationMatrix;
+    private List<SphereCollider> _colliders = new List<SphereCollider>();
+    private List<Vector4> _positions = new List<Vector4>();
+    private List<float> _sizes = new List<float>();
+    private List<Matrix4x4> _rotationMatrices = new List<Matrix4x4>();
     
     void Start()
     {
-        InitCollider();   
+        InitLists();
     }
 
     void Update()
@@ -22,25 +23,45 @@ public class SingularInteractiveRaymarcher : MonoBehaviour
         UpdateShaderUniforms();
     }
 
-    private void InitCollider()
+    private void InitLists()
     {
-        _collider = _object.GetComponent<SphereCollider>();
-        _collider.radius = _scaleFactor;
+        for (int i = 0; i < _objects.Length; i++)
+        {
+            var collider = _objects[i].GetComponent<SphereCollider>();
+            collider.radius = _scaleFactor * 1.2f; // maybe need to fine tune this value
+            _colliders.Add(collider);
+            
+            var pos3 = _objects[i].transform.position;
+            _positions.Add(new Vector4(pos3.x, pos3.y, pos3.z));
+
+            var size = _objects[i].transform.lossyScale.magnitude;
+            _sizes.Add(size * _scaleFactor);
+            
+            var rot = _objects[i].transform.rotation;
+            _rotationMatrices.Add(Matrix4x4.Rotate(rot));
+        }
     }
 
     private void UpdateShaderUniforms()
     {
-        var pos3 = _object.transform.position;
-        _objectPosition = new Vector4(pos3.x, pos3.y, pos3.z, 1.0f);
+        for (int i = 0; i < _objects.Length; i++)
+        {
+            var pos3 = _objects[i].transform.position;
+            _positions[i] = new Vector4(pos3.x, pos3.y, pos3.z, 1.0f);
 
-        var scale = _object.transform.localScale;
-        _objectRadius = scale.x * _scaleFactor;
+            var scale = _objects[i].transform.localScale;
+            _sizes[i] = scale.x * _scaleFactor;
 
-        var rot = _object.transform.rotation;
-        _objectRotationMatrix = Matrix4x4.Rotate(rot);
+            var rot = _objects[i].transform.rotation;
+            _rotationMatrices[i] = Matrix4x4.Rotate(rot);
+        }
         
-        _material.SetVector("_Position", _objectPosition);
-        _material.SetFloat("_Radius", _objectRadius);
-        _material.SetMatrix("_Rotation", _objectRotationMatrix);
+        var posistionsArray = _positions.ToArray();
+        var sizesArray = _sizes.ToArray();
+        var rotationsArray = _rotationMatrices.ToArray();
+        
+        _material.SetVectorArray("_Position", posistionsArray);
+        _material.SetFloatArray("_Radius", sizesArray);
+        _material.SetMatrixArray("_Rotation", rotationsArray);
     }
 }

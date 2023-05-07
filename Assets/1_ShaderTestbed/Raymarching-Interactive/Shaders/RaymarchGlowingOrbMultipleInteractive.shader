@@ -1,10 +1,10 @@
-Shader "Raymarch/GlowingOrbSingularInteractive"
+Shader "Raymarch/GlowingOrbMultipleInteractive"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-    	_BaseColor ("Base Color", Color) = (0.0, 0.4, 0.2, 1.0)
-    	[HDR] _GlowColor ("Glow Color", Color) = (1,0.3,0.3,1)
+    	_BaseColor ("Base Color", Color) = (0.25, 0.44, 0.6, 1.0)
+    	[HDR] _GlowColor ("Glow Color", Color) = (1.5,0.0,0.0,1)
     	_NoiseScale ("Noise Scale", Float) = 1
     	_SmoothAmount ("Smooth Amount", Range(0, 0.2)) = 0.1
     	_FresnelIntensity ("Fresnel Intensity", Range(0, 10)) = 0.0
@@ -59,9 +59,11 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
             float _ScatteringRadius;
             float _TestScale = 0.4;
 
-            uniform float4 _Position;
-            uniform float _Radius;
-            uniform float4x4 _Rotation;
+            // uniforms passed in from c# script
+            uniform int _NumberOfObjects;
+            uniform float4 _Positions[10];
+            uniform float _Sizes[10];
+            uniform float4x4 _Rotations[10];
 
             v2f vert (appdata v)
             {
@@ -146,18 +148,19 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
 			  return lerp(b, a, h) - k * h * (1.0 - h);
 			}
             
-            float sphere(float3 p, float r, float3 offset)
+            float sphere(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
             {
-				p -= offset;
+				// p -= worldPos;
+            	// p = mul(p, rotMatrix);
             	
 	            float d = length(p) - r;
             	return d;
             }
 
-            float gyroid(float3 p, float3 offset)
+            float gyroid(float3 p, float3 worldPos, float4x4 rotMatrix)
             {
-				p -= offset;
-            	// p += _Position; // keeps gyroid in one place
+				// p -= worldPos;
+            	// p = mul(p, rotMatrix);
             	
             	float rescaleFactor = _GyroidScale;
 	            p *= rescaleFactor;
@@ -170,23 +173,23 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
             	return gyroid;
             }
 
-            float ballGyroidHollow(float3 p, float r, float3 offset)
+            float ballGyroidHollow(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
             {
 	            // sphere shell gyroid
-            	float s = sphere(p, r, offset);
+            	float s = sphere(p, r, worldPos, rotMatrix);
             	s = abs(s) - _GyroidThickness;
-				float g = gyroid(p, offset);
+				float g = gyroid(p, worldPos, rotMatrix);
             	float k = 0.1;
             	s = smin(s, g, -k);
 
             	return s;
             }
 
-            float ballGyroidSolid(float3 p, float r, float3 offset)
+            float ballGyroidSolid(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
             {
 	            // sphere shell gyroid
-            	float s = sphere(p, r, offset);
-				float g = gyroid(p, offset);
+            	float s = sphere(p, r, worldPos, rotMatrix);
+				float g = gyroid(p, worldPos, rotMatrix);
             	float k = 0.1;
             	s = smin(s, g, -k);
 
@@ -194,13 +197,13 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
             }
             
 
-			float orb(float3 p, float r, float3 offset)
+			float orb(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
             {
 	            // main sphere
-            	float d = sphere(p, r, offset);
+            	float d = sphere(p, r, worldPos, rotMatrix);
 
             	// gyroid ridges
-            	float s = ballGyroidHollow(p, r, offset);
+            	float s = ballGyroidHollow(p, r, worldPos, rotMatrix);
 
             	// combined
             	float k = 0.1;
@@ -215,13 +218,95 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
 
 			float getDist(float3 p)
             {
-            	p -= _Position;
-				p = mul(p, _Rotation);
+    //         	float d = 0.0;
+    //         	float lastDist = 0.0;
+	   //
+    //         	if (_NumberOfObjects <= 0) return 1.0;
+    //         	
+    //         	for (int i = 0; i < _NumberOfObjects; i++)
+    //         	{
+    //         		float s = orb(p, _Sizes[i], _Positions[i].xyz, _Rotations[i]);
+				// 	if (i == 0)
+				// 	{
+				// 		lastDist = s;
+				// 		continue;
+				// 	}
+	   //
+    //         		d = smin(lastDist, s, _SmoothAmount);
+    //         		lastDist = d;
+    //         	}
+    //         	
+				// return d;
+
+
+            	// old
+            	p -= _Positions[0];
+				p = mul(p, _Rotations[0]);
             	
-				float d = orb(p, _Radius, 0.0);
+				float d = orb(p, _Sizes[0], _Positions[0], _Rotations[0]);
             	
 				return d;
 			}
+
+			// int getID(float3 p)
+   //          {
+   //          	float d = 0.0;
+   //          	float lastDist = 0.0;
+   //
+   //          	if (_NumberOfObjects <= 0) return 1.0;
+   //
+   //          	int id;
+   //          	
+   //          	for (int i = 0; i < _NumberOfObjects; i++)
+   //          	{
+   //          		float s = orb(p, _Sizes[i], _Positions[i].xyz, _Rotations[i]);
+			// 		if (i == 0)
+			// 		{
+			// 			lastDist = s;
+			// 			continue;
+			// 		}
+   //
+   //          		d = smin(lastDist, s, _SmoothAmount);
+   //          		lastDist = d;
+   //          	}
+   //
+   //              switch (d)
+   //              {
+	  //               case d == orb(p, _Sizes[0], _Positions[0].xyz, _Rotations[0]):
+	  //               	id = 0;
+   //              		break;
+   //              	case d == orb(p, _Sizes[1], _Positions[1].xyz, _Rotations[1]):
+	  //               	id = 0;
+   //              		break;
+   //              	case d == orb(p, _Sizes[2], _Positions[2].xyz, _Rotations[2]):
+	  //               	id = 0;
+   //              		break;
+   //              	case d == orb(p, _Sizes[3], _Positions[3].xyz, _Rotations[3]):
+	  //               	id = 0;
+   //              		break;
+   //              	case d == orb(p, _Sizes[4], _Positions[4].xyz, _Rotations[4]):
+	  //               	id = 0;
+   //              		break;
+   //              	case d == orb(p, _Sizes[5], _Positions[5].xyz, _Rotations[5]):
+	  //               	id = 0;
+   //              		break;
+   //              	case d == orb(p, _Sizes[6], _Positions[6].xyz, _Rotations[6]):
+	  //               	id = 0;
+   //              		break;
+   //              	case d == orb(p, _Sizes[7], _Positions[7].xyz, _Rotations[7]):
+	  //               	id = 0;
+   //              		break;
+   //              	case d == orb(p, _Sizes[8], _Positions[8].xyz, _Rotations[8]):
+	  //               	id = 0;
+   //              		break;
+   //              	case d == orb(p, _Sizes[9], _Positions[9].xyz, _Rotations[9]):
+	  //               	id = 0;
+   //              		break;
+   //              }
+   //          	
+			// 	return id;
+			// }
+            
 
 			float rayMarch(float3 ro, float3 rd) {
 				float dO = 0;
@@ -259,7 +344,7 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
 			}
 
 
-            float subSurfaceScattering(float3 p, float3 rotatedP, float3 rd)
+            float subSurfaceScattering(float3 p, float3 rotatedP, float3 rd, float r, float4x4 rotMatrix)
             {
             	float2 uv = dot(p, rd); // uv based on ray direction
                 float cds = dot(uv, uv); // center distance squared
@@ -267,7 +352,7 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
                 float sss = smoothstep(0.2, 0.0, cds); // sub-surface scattering
                 sss = 1.0 - sss;
                 sss = min(sss, 2.0);
-                float b = ballGyroidSolid(rotatedP, _Radius * 1.5, 0);
+                float b = ballGyroidSolid(rotatedP, r * 1.5, 0, rotMatrix);
                 sss *= smoothstep(-0.03, 0.0, b);
 
             	return sss;
@@ -292,13 +377,13 @@ Shader "Raymarch/GlowingOrbSingularInteractive"
                     float3 n = getNormal(p);
 					float3 l = applyLighting(n, p);
 
-                	// update transforms
-                	p -= _Position;
-                	float3 pRot = mul(p, _Rotation);
-                	
+                	// int id = getID(p);
+
+                	float3 pPos = p - _Positions[0];
+                	float3 pRot = mul(p, _Rotations[0]);
                 	
 					// sub surface scattering
-					float sss = subSurfaceScattering(p, pRot, rd);
+					float sss = subSurfaceScattering(pRot, pRot, rd, _Sizes[0], _Rotations[0]);
                 	
                     col.rgb = l * _BaseColor;
                 	col.rgb += sss * _GlowColor;
