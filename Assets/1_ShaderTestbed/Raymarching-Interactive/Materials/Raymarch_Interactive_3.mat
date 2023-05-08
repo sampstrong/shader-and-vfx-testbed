@@ -26,10 +26,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _FresnelIntensity: 1
-    - _FresnelRamp: 2.49
+    - _FresnelIntensity: 0.61
+    - _FresnelRamp: 1.48
     - _MainTexGlow: 10.4
-    - _SmoothAmount: 0.218
+    - _SmoothAmount: 0.166
     m_Colors:
     - _MainColor: {r: 0, g: 22.363522, b: 0.8196055, a: 1}
   m_BuildTextureStacks: []

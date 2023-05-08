@@ -308,7 +308,6 @@ Shader "Raymarch/GlowingOrbSingularInteractiveArray"
 
             float subSurfaceScattering(float3 p, float3 rd, int id)
             {
-            	//p -= _Positions[id];
             	float2 uv = dot(p, rd); // uv based on ray direction
                 float cds = dot(uv, uv); // center distance squared
                 
@@ -327,7 +326,6 @@ Shader "Raymarch/GlowingOrbSingularInteractiveArray"
             {
                 float3 ro = i.ro; 
                 float3 rd = normalize(i.hitPos - ro);
-
             	
                 fixed4 col = 0;
 

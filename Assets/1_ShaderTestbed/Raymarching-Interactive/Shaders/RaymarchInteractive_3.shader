@@ -48,9 +48,9 @@ Shader "Raymarch/Interactive_3"
             sampler2D _MainTex;
             float4 _MainTex_ST;
             float _SmoothAmount;
-            uniform int _NumberOfSpheres;
+            uniform int _NumberOfObjects;
             uniform float4 _Positions[20];
-            uniform float4 _Scales[20];
+            uniform float4 _Sizes[20];
             float _FresnelRamp, _FresnelIntensity;
             float4 _MainColor;
             float _MainTexGlow;
@@ -83,11 +83,11 @@ Shader "Raymarch/Interactive_3"
             	float d = 0.0;
             	float lastDist = 0.0;
 
-            	if (_NumberOfSpheres <= 0) return 1.0;
+            	if (_NumberOfObjects <= 0) return 1.0;
             	
-            	for (int i = 0; i < _NumberOfSpheres; i++)
+            	for (int i = 0; i < _NumberOfObjects; i++)
             	{
-            		float s = sphere(p, _Scales[i], _Positions[i].xyz);
+            		float s = sphere(p, _Sizes[i], _Positions[i].xyz);
 					if (i == 0)
 					{
 						lastDist = s;

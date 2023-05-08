@@ -28,7 +28,7 @@ public class SingularInteractiveRaymarcher : MonoBehaviour
         for (int i = 0; i < _objects.Length; i++)
         {
             var collider = _objects[i].GetComponent<SphereCollider>();
-            collider.radius = _scaleFactor * 1.2f; // maybe need to fine tune this value
+            collider.radius = _scaleFactor * 1.1f; // maybe need to fine tune this value
             _colliders.Add(collider);
             
             var pos3 = _objects[i].transform.position;
