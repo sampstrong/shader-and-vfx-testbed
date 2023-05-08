@@ -699,7 +699,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &704780042
 Transform:
   m_ObjectHideFlags: 0
@@ -937,7 +937,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!135 &1078513254
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -971,7 +971,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 104b3afd2b11b4d65ba1a9d4e70202ef, type: 2}
+  - {fileID: 2100000, guid: 41664effd7f29491892d91fbc857ec30, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1008,14 +1008,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1078513253}
-  m_LocalRotation: {x: -0.54369044, y: -0.056277394, z: -0.2231699, w: 0.8071113}
-  m_LocalPosition: {x: -0.000000007547416, y: -0.00000003904356, z: 0.123}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: -64.523, y: 20.668, z: -44.045}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1084072587
 GameObject:
   m_ObjectHideFlags: 0
@@ -1470,7 +1470,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!73398921 &1346981881
 VFXRenderer:
   serializedVersion: 1
@@ -1479,7 +1479,7 @@ VFXRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1346981880}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -1527,7 +1527,16 @@ VisualEffect:
   m_ResourceVersion: 1
   m_PropertySheet:
     m_Float:
-      m_Array: []
+      m_Array:
+      - m_Value: 2.52
+        m_Name: NoiseFrequency
+        m_Overridden: 1
+      - m_Value: 0.07
+        m_Name: NoisePower
+        m_Overridden: 1
+      - m_Value: 1.55
+        m_Name: NoiseSpeed
+        m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
@@ -1700,7 +1709,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1822665006
 Transform:
   m_ObjectHideFlags: 0
@@ -1728,7 +1737,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb1ef4567382b4f70938ac72a52e78e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _material: {fileID: 2100000, guid: 104b3afd2b11b4d65ba1a9d4e70202ef, type: 2}
+  _material: {fileID: 2100000, guid: 41664effd7f29491892d91fbc857ec30, type: 2}
   _objects:
   - {fileID: 1078513253}
   _scaleFactor: 0.35
