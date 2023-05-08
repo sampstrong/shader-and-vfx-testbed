@@ -61,9 +61,10 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
             float _TestScale = 0.4;
             float _Intensity;
 
-            uniform float4 _Positions[1];
-            uniform float _Sizes[1];
-            uniform float4x4 _Rotations[1];
+            uniform int _NumberOfObjects;
+            uniform float4 _Positions[10];
+            uniform float _Sizes[10];
+            uniform float4x4 _Rotations[10];
 
             v2f vert (appdata v)
             {
@@ -229,7 +230,27 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
 
 			float getDist(float3 p)
             {
-				float d = sphere(p, _Sizes[0], _Positions[0], _Rotations[0]);
+				// float d = sphere(p, _Sizes[0], _Positions[0], _Rotations[0]);
+    //         	
+				// return d;
+
+            	float d = 0.0;
+            	float lastDist = 0.0;
+	   
+            	if (_NumberOfObjects <= 0) return 1.0;
+            	
+            	for (int i = 0; i < _NumberOfObjects; i++)
+            	{
+            		float s = sphere(p, _Sizes[i], _Positions[i].xyz, _Rotations[i]);
+					if (i == 0)
+					{
+						lastDist = s;
+						continue;
+					}
+	   
+            		d = smin(lastDist, s, _SmoothAmount);
+            		lastDist = d;
+            	}
             	
 				return d;
 			}
@@ -247,9 +268,9 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
 			}
             
 
-            float getFresnel(float3 normal, float3 ro)
+            float getFresnel(float3 normal, float3 rd)
             {
-				float3 viewDir = normalize(ro);
+				float3 viewDir = normalize(rd);
             	
 	            float fresnelAmount = 1 - max(0.0, dot(normal, viewDir));
                 fresnelAmount = pow(fresnelAmount, _FresnelRamp) * _FresnelIntensity;
@@ -270,11 +291,16 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
 			}
 
 			
-            float subSurfaceScattering(float3 n, float3 ro)
+            float subSurfaceScattering(float3 p, float3 n, float3 ro)
             {
             	float f = getFresnel(n, ro);
             	float sss = smoothstep(0.7, 0.0, f);
 
+                // float b = gyroid(p, _Positions[0], _Rotations[0]);
+                // sss *= smoothstep(-0.03, 0.0, b);
+            	float s = sin(p.z * 100 + _Time.y);
+            	sss *= smoothstep(-0.5, 0.5, s);
+            	
             	return sss;
             }
 
@@ -292,16 +318,16 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
                 if (d < MAX_DIST)
                 {
                     float3 p = ro + rd * d;
-                	
                     float3 n = getNormal(p);
 					float3 l = applyLighting(n, p);
                 	
                 	// update transforms
-                	p -= _Positions[0];
+                	// p -= _Positions[0];
                 	float3 pRot = mul(p, _Rotations[0]);
                 	
 					// sub surface scattering
-					float sss = subSurfaceScattering(n, ro);
+					float sss = subSurfaceScattering(p, n, ro - p);
+                	
                 	
                     col.rgb = l * _BaseColor;
                 	col.rgb += sss * (_GlowColor * _Intensity);
@@ -310,6 +336,7 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
                 	float noise = 1.0 - clamp(snoise(pRot * _NoiseScale), 0.6, 0.8);
                 	noise = lerp(noise, 0.5, clamp(1.0 - _GlowColor.r * sss, 0.0, 1.0));
                 	col.rgb *= noise;
+
                 }
                 else
                 {

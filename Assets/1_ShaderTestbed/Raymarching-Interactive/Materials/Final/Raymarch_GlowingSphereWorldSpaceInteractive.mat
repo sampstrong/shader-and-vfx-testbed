@@ -26,16 +26,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _FresnelIntensity: 5.46
-    - _FresnelRamp: 0.65
-    - _Gloss: 1.5
-    - _GyroidScale: 15
-    - _GyroidThickness: 0.05
+    - _FresnelIntensity: 0.85
+    - _FresnelRamp: 0.77
+    - _Gloss: 2
+    - _GyroidScale: 22.8
+    - _GyroidThickness: 0.0457
     - _Intensity: 1
     - _NoiseScale: 106.3
-    - _ScatteringRadius: 1
+    - _ScatteringRadius: 4.03
     - _SmoothAmount: 0.1563
     m_Colors:
     - _BaseColor: {r: 0.24999997, g: 0.43999997, b: 0.6, a: 1}
-    - _GlowColor: {r: 1.5, g: 0, b: 0, a: 1}
+    - _GlowColor: {r: 2.270603, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

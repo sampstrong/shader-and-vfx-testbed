@@ -16,6 +16,7 @@ public class SingularInteractiveRaymarcher : MonoBehaviour
     void Start()
     {
         InitLists();
+        _material.SetInt("_NumberOfObjects", _objects.Length);
     }
 
     void Update()
