@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class SingularInteractiveRaymarcher : MonoBehaviour
 {
     [SerializeField] private Material _material;
@@ -60,8 +60,8 @@ public class SingularInteractiveRaymarcher : MonoBehaviour
         var sizesArray = _sizes.ToArray();
         var rotationsArray = _rotationMatrices.ToArray();
         
-        _material.SetVectorArray("_Position", posistionsArray);
-        _material.SetFloatArray("_Radius", sizesArray);
-        _material.SetMatrixArray("_Rotation", rotationsArray);
+        _material.SetVectorArray("_Positions", posistionsArray);
+        _material.SetFloatArray("_Sizes", sizesArray);
+        _material.SetMatrixArray("_Rotations", rotationsArray);
     }
 }

@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Raymarch_GlowingOrbSingularInteractiveArray
-  m_Shader: {fileID: 4800000, guid: 44116d1a806544a7187b3b5226a9f8c2, type: 3}
+  m_Name: Raymarch_LitSpheresDifferentMaterials
+  m_Shader: {fileID: 4800000, guid: 8a5f82e39a6194faba04cd011caf9358, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -26,15 +26,6 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _FresnelIntensity: 5.46
-    - _FresnelRamp: 0.65
-    - _Gloss: 1.5
-    - _GyroidScale: 15
-    - _GyroidThickness: 0.05
-    - _NoiseScale: 106.3
-    - _ScatteringRadius: 1
-    - _SmoothAmount: 0.1188
-    m_Colors:
-    - _BaseColor: {r: 0.25916687, g: 0.44293585, b: 0.6037736, a: 1}
-    - _GlowColor: {r: 0.21546952, g: 0, b: 0, a: 1}
+    - _SmoothAmount: 0.1
+    m_Colors: []
   m_BuildTextureStacks: []

@@ -59,9 +59,9 @@ Shader "Raymarch/GlowingOrbSingularInteractiveArray"
             float _ScatteringRadius;
             float _TestScale = 0.4;
 
-            uniform float4 _Position[1];
-            uniform float _Radius[1];
-            uniform float4x4 _Rotation[1];
+            uniform float4 _Positions[2];
+            uniform float _Sizes[2];
+            uniform float4x4 _Rotations[2];
 
             v2f vert (appdata v)
             {
@@ -183,6 +183,17 @@ Shader "Raymarch/GlowingOrbSingularInteractiveArray"
             	return s;
             }
 
+            float ballGyroidHollowID(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
+            {
+	            // sphere shell gyroid
+            	float s = sphere(p, r, worldPos, rotMatrix);
+            	s = abs(s) - _GyroidThickness;
+				float g = gyroid(p, worldPos, rotMatrix);
+            	s = max(s, g);
+
+            	return s;
+            }
+
             float ballGyroidSolid(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
             {
 	            // sphere shell gyroid
@@ -210,6 +221,20 @@ Shader "Raymarch/GlowingOrbSingularInteractiveArray"
             	return d;
             }
 
+            float orbID(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
+            {
+	            // main sphere
+            	float d = sphere(p, r, worldPos, rotMatrix);
+
+            	// gyroid ridges
+            	float s = ballGyroidHollowID(p, r, worldPos, rotMatrix);
+
+            	// combined
+				d = min(s, d);
+
+            	return d;
+            }
+
             
                         
 			// ------ raymarching ------
@@ -219,9 +244,30 @@ Shader "Raymarch/GlowingOrbSingularInteractiveArray"
             	// p -= _Position;
 				// p = mul(p, _Rotation);
             	
-				float d = orb(p, _Radius[0], _Position[0], _Rotation[0]);
+				float o0 = orb(p, _Sizes[0], _Positions[0], _Rotations[0]);
+            	float o1 = orb(p, _Sizes[1], _Positions[1], _Rotations[1]);
+
+            	float d = smin(o0, o1, _SmoothAmount);
+            	// float d = o1;
             	
 				return d;
+			}
+
+            int getID(float3 p)
+            {
+            	int id;
+            	
+				float o0 = orbID(p, _Sizes[0], _Positions[0], _Rotations[0]);
+            	float o1 = orbID(p, _Sizes[1], _Positions[1], _Rotations[1]);
+
+            	float d = min(o0, o1);
+            	
+				if (d == o0)
+					id = 0;
+            	else if (d == o1)
+            		id = 1;
+            	
+				return id;
 			}
 
 			float rayMarch(float3 ro, float3 rd) {
@@ -260,15 +306,16 @@ Shader "Raymarch/GlowingOrbSingularInteractiveArray"
 			}
 
 
-            float subSurfaceScattering(float3 p, float3 rd)
+            float subSurfaceScattering(float3 p, float3 rd, int id)
             {
+            	//p -= _Positions[id];
             	float2 uv = dot(p, rd); // uv based on ray direction
                 float cds = dot(uv, uv); // center distance squared
                 
                 float sss = smoothstep(0.2, 0.0, cds); // sub-surface scattering
                 sss = 1.0 - sss;
                 sss = min(sss, 2.0);
-                float b = ballGyroidSolid(p, _Radius[0] * 1.5, 0, _Rotation[0]);
+                float b = ballGyroidSolid(p, _Sizes[id] * 1.5, 0, _Rotations[id]);
                 sss *= smoothstep(-0.03, 0.0, b);
 
             	return sss;
@@ -293,13 +340,13 @@ Shader "Raymarch/GlowingOrbSingularInteractiveArray"
                     float3 n = getNormal(p);
 					float3 l = applyLighting(n, p);
 
+                	int id = getID(p);
                 	// update transforms
-                	p -= _Position[0];
-                	float3 pRot = mul(p, _Rotation[0]);
-                	
+                	p -= _Positions[id];
+                	float3 pRot = mul(p, _Rotations[id]);
                 	
 					// sub surface scattering
-					float sss = subSurfaceScattering(p, rd);
+					float sss = subSurfaceScattering(p, rd, id);
                 	
                     col.rgb = l * _BaseColor;
                 	col.rgb += sss * _GlowColor;
