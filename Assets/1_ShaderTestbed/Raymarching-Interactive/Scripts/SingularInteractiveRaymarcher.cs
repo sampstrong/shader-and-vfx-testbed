@@ -7,6 +7,7 @@ public class SingularInteractiveRaymarcher : MonoBehaviour
     [SerializeField] private Material _material;
     [SerializeField] private GameObject[] _objects;
     [SerializeField] private float _scaleFactor = 0.35f;
+    [SerializeField] [Range(0, 1)] private float _glowIntensity = 1.0f;
 
     private List<SphereCollider> _colliders = new List<SphereCollider>();
     private List<Vector4> _positions = new List<Vector4>();
@@ -22,6 +23,7 @@ public class SingularInteractiveRaymarcher : MonoBehaviour
     void Update()
     {
         UpdateShaderUniforms();
+        _material.SetFloat("_Intensity", _glowIntensity);
     }
 
     private void InitLists()

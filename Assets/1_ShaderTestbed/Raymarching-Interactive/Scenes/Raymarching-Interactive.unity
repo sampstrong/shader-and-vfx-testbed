@@ -1307,9 +1307,9 @@ MonoBehaviour:
   _renderer: {fileID: 940652988}
   _collider: {fileID: 940652987}
   _rigidBody: {fileID: 940652992}
-  xBounds: 2
-  yBounds: 2
-  zBounds: 2
+  xBounds: 1.5
+  yBounds: 1.5
+  zBounds: 1.5
   _velocityMultiplier: 0.2
   _minVelocity: 0.1
   _minScale: 0.2
