@@ -10,7 +10,9 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
     	_FresnelIntensity ("Fresnel Intensity", Range(0, 10)) = 5.46
         _FresnelRamp ("Fresnel Ramp", Range(0, 10)) = 0.65
     	_GyroidScale ("Gyroid Scale", Float) = 15.0
-    	_GyroidThickness ("Gyroid Thickness", Range(0.0, 0.1)) = 0.05
+    	_GyroidExtrusion ("Gyroid Extrusion", Range(0.0, 5)) = 0.05
+    	_GyroidThickness ("Gyroid Thickness", Range(0.0, 0.1)) = 0.03
+    	_GyroidSmoothAmount ("Gyroid Smooth Amount", Float) = 0.1
     	_Gloss ("Gloss", Range(1, 100)) = 1.5
     	_ScatteringRadius ("Scattering Radius", Float) = 1
     	_Intensity("Intensity", Float) = 1
@@ -55,7 +57,7 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
             float _SmoothAmount;
             float _FresnelRamp, _FresnelIntensity;
             fixed4 _BaseColor, _GlowColor;
-            float _NoiseScale, _GyroidScale, _GyroidThickness;
+            float _NoiseScale, _GyroidScale, _GyroidThickness, _GyroidExtrusion, _GyroidSmoothAmount;
             float _Gloss;
             float _ScatteringRadius;
             float _TestScale = 0.4;
@@ -165,7 +167,7 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
             	
             	float rescaleFactor = _GyroidScale;
 	            p *= rescaleFactor;
-            	float thickness = 0.03;
+            	float thickness = _GyroidThickness;
 
 				p.y += _Time.y; // animate
             	
@@ -178,9 +180,21 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
             {
 	            // sphere shell gyroid
             	float s = sphere(p, r, worldPos, rotMatrix);
-            	s = abs(s) - _GyroidThickness;
+            	s = abs(s) - _GyroidExtrusion;
 				float g = gyroid(p, worldPos, rotMatrix);
-            	float k = 0.1;
+            	float k = _GyroidSmoothAmount;
+            	s = smin(s, g, -k);
+
+            	return s;
+            }
+
+            float ballGyroidHollowUniversal(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
+            {
+	            // sphere shell gyroid
+            	float s = sphere(p, r, worldPos, rotMatrix);
+            	s = abs(s) - _GyroidThickness;
+				float g = gyroid(p, float3(0,0,0), _Rotations[0]);
+            	float k = _GyroidSmoothAmount;
             	s = smin(s, g, -k);
 
             	return s;
@@ -202,7 +216,7 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
 	            // sphere shell gyroid
             	float s = sphere(p, r, worldPos, rotMatrix);
 				float g = gyroid(p, worldPos, rotMatrix);
-            	float k = 0.1;
+            	float k = _GyroidSmoothAmount;
             	s = smin(s, g, -k);
 
             	return s;
@@ -215,10 +229,10 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
             	float d = sphere(p, r, worldPos, rotMatrix);
 
             	// gyroid ridges
-            	float s = ballGyroidHollow(p, r, worldPos, rotMatrix);
+            	float s = ballGyroidHollowUniversal(p, r, worldPos, _Rotations[0]);
 
             	// combined
-            	float k = 0.1;
+            	float k = _GyroidSmoothAmount;
 				d = smin(s, d, k);
 
             	return d;
@@ -230,10 +244,6 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
 
 			float getDist(float3 p)
             {
-				// float d = sphere(p, _Sizes[0], _Positions[0], _Rotations[0]);
-    //         	
-				// return d;
-
             	float d = 0.0;
             	float lastDist = 0.0;
 	   
@@ -241,7 +251,7 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
             	
             	for (int i = 0; i < _NumberOfObjects; i++)
             	{
-            		float s = sphere(p, _Sizes[i], _Positions[i].xyz, _Rotations[i]);
+            		float s = orb(p, _Sizes[i], _Positions[i].xyz, _Rotations[i]);
 					if (i == 0)
 					{
 						lastDist = s;
@@ -296,10 +306,10 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
             	float f = getFresnel(n, ro);
             	float sss = smoothstep(0.7, 0.0, f);
 
-                // float b = gyroid(p, _Positions[0], _Rotations[0]);
-                // sss *= smoothstep(-0.03, 0.0, b);
-            	float s = sin(p.z * 100 + _Time.y);
-            	sss *= smoothstep(-0.5, 0.5, s);
+                float b = gyroid(p, float3(0,0,0), _Rotations[0]);
+                sss *= smoothstep(0.0, 0.2, b);
+            	float s = abs(sin(p.z * 50 + _Time.y * 2.0));
+            	sss *= smoothstep(-0.5, 1, s);
             	
             	return sss;
             }
