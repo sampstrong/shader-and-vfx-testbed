@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //[ExecuteInEditMode]
-public class SingularInteractiveRaymarcher : MonoBehaviour
+public class DynamicGlowingOrbs : MonoBehaviour
 {
     [SerializeField] private Material _material;
     [SerializeField] private GameObject[] _objects;

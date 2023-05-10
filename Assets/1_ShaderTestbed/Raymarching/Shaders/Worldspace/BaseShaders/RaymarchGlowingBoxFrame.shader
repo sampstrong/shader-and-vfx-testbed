@@ -10,8 +10,9 @@ Shader "Raymarch/GlowingBoxFrame"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Opaque" "Queue"="Geometry" }
         LOD 100
+    	ZTest Always
 
         Pass
         {

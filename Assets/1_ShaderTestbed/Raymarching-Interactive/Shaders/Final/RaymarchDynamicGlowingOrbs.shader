@@ -1,4 +1,4 @@
-Shader "Raymarch/GlowingOrbWorldSpaceInteractive"
+Shader "Raymarch/DynamicGlowingOrbs"
 {
     Properties
     {

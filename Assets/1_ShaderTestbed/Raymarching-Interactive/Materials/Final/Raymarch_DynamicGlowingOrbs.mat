@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Raymarch_GlowingSphereWorldSpaceInteractive
+  m_Name: Raymarch_DynamicGlowingOrbs
   m_Shader: {fileID: 4800000, guid: 8f4788522c27e4b76b7dae7efd1cef5e, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
