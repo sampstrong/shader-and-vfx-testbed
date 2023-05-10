@@ -1,4 +1,4 @@
-Shader "Raymarch/DynamicGlowingOrbs"
+Shader "Raymarch/GlowingOrbsWorldSpaceInteractive"
 {
     Properties
     {
@@ -10,9 +10,7 @@ Shader "Raymarch/DynamicGlowingOrbs"
     	_FresnelIntensity ("Fresnel Intensity", Range(0, 10)) = 5.46
         _FresnelRamp ("Fresnel Ramp", Range(0, 10)) = 0.65
     	_GyroidScale ("Gyroid Scale", Float) = 15.0
-    	_GyroidExtrusion ("Gyroid Extrusion", Range(0.0, 5)) = 0.05
-    	_GyroidThickness ("Gyroid Thickness", Range(0.0, 0.1)) = 0.03
-    	_GyroidSmoothAmount ("Gyroid Smooth Amount", Float) = 0.1
+    	_GyroidThickness ("Gyroid Thickness", Range(0.0, 0.1)) = 0.05
     	_Gloss ("Gloss", Range(1, 100)) = 1.5
     	_ScatteringRadius ("Scattering Radius", Float) = 1
     	_Intensity("Intensity", Float) = 1
@@ -57,18 +55,15 @@ Shader "Raymarch/DynamicGlowingOrbs"
             float _SmoothAmount;
             float _FresnelRamp, _FresnelIntensity;
             fixed4 _BaseColor, _GlowColor;
-            float _NoiseScale, _GyroidScale, _GyroidThickness, _GyroidExtrusion, _GyroidSmoothAmount;
+            float _NoiseScale, _GyroidScale, _GyroidThickness;
             float _Gloss;
             float _ScatteringRadius;
             float _TestScale = 0.4;
             float _Intensity;
 
-            uniform int _NumberOfObjects;
-            uniform float4 _Positions[10];
-            uniform float _Sizes[10];
-            uniform float4x4 _Rotations[10];
-
-            uniform fixed4 _Colors[10];
+            uniform float4 _Position;
+            uniform float _Size;
+            uniform float4x4 _Rotation;
 
             v2f vert (appdata v)
             {
@@ -169,7 +164,7 @@ Shader "Raymarch/DynamicGlowingOrbs"
             	
             	float rescaleFactor = _GyroidScale;
 	            p *= rescaleFactor;
-            	float thickness = _GyroidThickness;
+            	float thickness = 0.03;
 
 				p.y += _Time.y; // animate
             	
@@ -182,21 +177,9 @@ Shader "Raymarch/DynamicGlowingOrbs"
             {
 	            // sphere shell gyroid
             	float s = sphere(p, r, worldPos, rotMatrix);
-            	s = abs(s) - _GyroidExtrusion;
-				float g = gyroid(p, worldPos, rotMatrix);
-            	float k = _GyroidSmoothAmount;
-            	s = smin(s, g, -k);
-
-            	return s;
-            }
-
-            float ballGyroidHollowUniversal(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
-            {
-	            // sphere shell gyroid
-            	float s = sphere(p, r, worldPos, rotMatrix);
             	s = abs(s) - _GyroidThickness;
-				float g = gyroid(p, float3(0,0,0), _Rotations[0]);
-            	float k = _GyroidSmoothAmount;
+				float g = gyroid(p, worldPos, rotMatrix);
+            	float k = 0.1;
             	s = smin(s, g, -k);
 
             	return s;
@@ -218,7 +201,7 @@ Shader "Raymarch/DynamicGlowingOrbs"
 	            // sphere shell gyroid
             	float s = sphere(p, r, worldPos, rotMatrix);
 				float g = gyroid(p, worldPos, rotMatrix);
-            	float k = _GyroidSmoothAmount;
+            	float k = 0.1;
             	s = smin(s, g, -k);
 
             	return s;
@@ -231,10 +214,10 @@ Shader "Raymarch/DynamicGlowingOrbs"
             	float d = sphere(p, r, worldPos, rotMatrix);
 
             	// gyroid ridges
-            	float s = ballGyroidHollowUniversal(p, r, worldPos, _Rotations[0]);
+            	float s = ballGyroidHollow(p, r, worldPos, rotMatrix);
 
             	// combined
-            	float k = _GyroidSmoothAmount;
+            	float k = 0.1;
 				d = smin(s, d, k);
 
             	return d;
@@ -246,23 +229,7 @@ Shader "Raymarch/DynamicGlowingOrbs"
 
 			float getDist(float3 p)
             {
-            	float d = 0.0;
-            	float lastDist = 0.0;
-	   
-            	if (_NumberOfObjects <= 0) return 1.0;
-            	
-            	for (int i = 0; i < _NumberOfObjects; i++)
-            	{
-            		float s = orb(p, _Sizes[i], _Positions[i].xyz, _Rotations[i]);
-					if (i == 0)
-					{
-						lastDist = s;
-						continue;
-					}
-	   
-            		d = smin(lastDist, s, _SmoothAmount);
-            		lastDist = d;
-            	}
+				float d = orb(p, _Size, _Position, _Rotation);
             	
 				return d;
 			}
@@ -280,9 +247,9 @@ Shader "Raymarch/DynamicGlowingOrbs"
 			}
             
 
-            float getFresnel(float3 normal, float3 rd)
+            float getFresnel(float3 normal, float3 ro)
             {
-				float3 viewDir = normalize(rd);
+				float3 viewDir = normalize(ro);
             	
 	            float fresnelAmount = 1 - max(0.0, dot(normal, viewDir));
                 fresnelAmount = pow(fresnelAmount, _FresnelRamp) * _FresnelIntensity;
@@ -302,17 +269,18 @@ Shader "Raymarch/DynamicGlowingOrbs"
 				return normalize(n);
 			}
 
-			
-            float subSurfaceScattering(float3 p, float3 n, float3 ro)
-            {
-            	float f = getFresnel(n, ro);
-            	float sss = smoothstep(0.7, 0.0, f);
 
-                float b = gyroid(p, float3(0,0,0), _Rotations[0]);
-                sss *= smoothstep(0.0, 0.2, b);
-            	float s = abs(sin(p.z * 50 + _Time.y * 2.0));
-            	sss *= smoothstep(-0.5, 1, s);
-            	
+            float subSurfaceScattering(float3 p, float3 rd)
+            {
+            	float2 uv = dot(p, rd); // uv based on ray direction
+                float cds = dot(uv, uv); // center distance squared
+                
+                float sss = smoothstep(0.2, 0.0, cds); // sub-surface scattering
+                sss = 1.0 - sss;
+                sss = min(sss, 2.0);
+                float b = ballGyroidSolid(p, _Size * 1.5, 0, _Rotation);
+                sss *= smoothstep(-0.03, 0.0, b);
+
             	return sss;
             }
 
@@ -330,16 +298,17 @@ Shader "Raymarch/DynamicGlowingOrbs"
                 if (d < MAX_DIST)
                 {
                     float3 p = ro + rd * d;
+                	
                     float3 n = getNormal(p);
 					float3 l = applyLighting(n, p);
+
                 	
                 	// update transforms
-                	// p -= _Positions[0];
-                	float3 pRot = mul(p, _Rotations[0]);
+                	p -= _Position;
+                	float3 pRot = mul(p, _Rotation);
                 	
 					// sub surface scattering
-					float sss = subSurfaceScattering(p, n, ro - p);
-                	
+					float sss = subSurfaceScattering(p, rd);
                 	
                     col.rgb = l * _BaseColor;
                 	col.rgb += sss * (_GlowColor * _Intensity);
@@ -348,7 +317,6 @@ Shader "Raymarch/DynamicGlowingOrbs"
                 	float noise = 1.0 - clamp(snoise(pRot * _NoiseScale), 0.6, 0.8);
                 	noise = lerp(noise, 0.5, clamp(1.0 - _GlowColor.r * sss, 0.0, 1.0));
                 	col.rgb *= noise;
-
                 }
                 else
                 {

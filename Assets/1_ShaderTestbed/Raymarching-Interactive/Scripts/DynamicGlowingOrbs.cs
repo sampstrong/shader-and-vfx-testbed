@@ -1,18 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//[ExecuteInEditMode]
+// [ExecuteInEditMode]
 public class DynamicGlowingOrbs : MonoBehaviour
 {
     [SerializeField] private Material _material;
     [SerializeField] private GameObject[] _objects;
     [SerializeField] private float _scaleFactor = 0.35f;
     [SerializeField] [Range(0, 1)] private float _glowIntensity = 1.0f;
+    
+    [Header("Colors")] 
+    [ColorUsageAttribute(true, true)] 
+    [SerializeField] private List<Color> _colors = new List<Color>();
 
     private List<SphereCollider> _colliders = new List<SphereCollider>();
     private List<Vector4> _positions = new List<Vector4>();
     private List<float> _sizes = new List<float>();
     private List<Matrix4x4> _rotationMatrices = new List<Matrix4x4>();
+    
     
     void Start()
     {
@@ -62,9 +67,11 @@ public class DynamicGlowingOrbs : MonoBehaviour
         var posistionsArray = _positions.ToArray();
         var sizesArray = _sizes.ToArray();
         var rotationsArray = _rotationMatrices.ToArray();
+        var colorsArray = _colors.ToArray();
         
         _material.SetVectorArray("_Positions", posistionsArray);
         _material.SetFloatArray("_Sizes", sizesArray);
         _material.SetMatrixArray("_Rotations", rotationsArray);
+        _material.SetColorArray("_Colors", colorsArray);
     }
 }

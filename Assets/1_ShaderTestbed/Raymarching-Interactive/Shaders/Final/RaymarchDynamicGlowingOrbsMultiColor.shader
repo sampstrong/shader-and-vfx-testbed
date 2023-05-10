@@ -1,4 +1,4 @@
-Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
+Shader "Raymarch/DynamicGlowingOrbsMultiColor"
 {
     Properties
     {
@@ -33,6 +33,7 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
             #include "Lighting.cginc"
             #include "AutoLight.cginc"
             #include "Assets/1_ShaderTestbed/cginc/noise.cginc"
+            
 
 			#define MAX_STEPS 100
 			#define MAX_DIST 100
@@ -67,6 +68,8 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
             uniform float4 _Positions[10];
             uniform float _Sizes[10];
             uniform float4x4 _Rotations[10];
+
+            uniform fixed4 _Colors[10];
 
             v2f vert (appdata v)
             {
@@ -149,6 +152,15 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
             float smin(float a, float b, float k) {
 			  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
 			  return lerp(b, a, h) - k * h * (1.0 - h);
+			}
+
+            float4 sminColor(float4 a, float4 b, float k)
+			{
+			    float h = clamp(0.5 + 0.5 * (b.w - a.w) / k, 0.0, 1.0);
+			    float3 color = lerp(b.rgb, a.rgb, h);
+			    float dist = lerp(b.w, a.w, h) - k * h * (1.0 - h);
+			
+			    return float4(color, dist);
 			}
             
             float sphere(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
@@ -258,12 +270,36 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
 						continue;
 					}
 	   
-            		d = smin(lastDist, s, _SmoothAmount);
+            		d = sminColor(lastDist, s, _SmoothAmount).w;
             		lastDist = d;
             	}
             	
 				return d;
 			}
+
+			float4 getDistColor(float3 p)
+            {
+            	float4 d = 0.0;
+            	float4 lastDist = 0.0;
+	   
+            	if (_NumberOfObjects <= 0) return 1.0;
+            	
+            	for (int i = 0; i < _NumberOfObjects; i++)
+            	{
+            		float4 s = float4(_Colors[i].rgb, orb(p, _Sizes[i], _Positions[i].xyz, _Rotations[i]));
+					if (i == 0)
+					{
+						lastDist = s;
+						continue;
+					}
+	   
+            		d = sminColor(lastDist, s, _SmoothAmount);
+            		lastDist = d;
+            	}
+            	
+				return d;
+			}
+            
 
 			float rayMarch(float3 ro, float3 rd) {
 				float dO = 0;
@@ -273,6 +309,18 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
 					dS = getDist(p);
 					dO += dS;
 					if (dS<SURF_DIST || dO>MAX_DIST) break;
+				}
+				return dO;
+			}
+
+            float4 rayMarchColor(float3 ro, float3 rd) {
+				float4 dO = 0;
+				float4 dS;
+				for (int i = 0; i < MAX_STEPS; i++) {
+					float3 p = ro + rd * dO.w;
+					dS = getDistColor(p);
+					dO += dS;
+					if (dS.w<SURF_DIST || dO.w>MAX_DIST) break;
 				}
 				return dO;
 			}
@@ -323,11 +371,11 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
             	
                 fixed4 col = 0;
 
-            	float d = rayMarch(ro, rd);
+            	float4 d = rayMarchColor(ro, rd);
 
-                if (d < MAX_DIST)
+                if (d.w < MAX_DIST)
                 {
-                    float3 p = ro + rd * d;
+                    float3 p = ro + rd * d.w;
                     float3 n = getNormal(p);
 					float3 l = applyLighting(n, p);
                 	
@@ -340,7 +388,8 @@ Shader "Raymarch/GlowingSphereWorldSpaceInteractive"
                 	
                 	
                     col.rgb = l * _BaseColor;
-                	col.rgb += sss * (_GlowColor * _Intensity);
+                	// col.rgb += sss * (_GlowColor * _Intensity);
+                	col.rgb += sss * (d.rgb * _Intensity);
 
                 	// surface dots
                 	float noise = 1.0 - clamp(snoise(pRot * _NoiseScale), 0.6, 0.8);
