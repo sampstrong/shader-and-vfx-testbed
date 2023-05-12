@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// [ExecuteInEditMode]
+[ExecuteInEditMode]
 public class DynamicGlowingOrbs : MonoBehaviour
 {
     [SerializeField] private Material _material;

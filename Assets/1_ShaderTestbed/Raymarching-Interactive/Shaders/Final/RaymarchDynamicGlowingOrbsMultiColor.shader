@@ -33,6 +33,7 @@ Shader "Raymarch/DynamicGlowingOrbsMultiColor"
             #include "Lighting.cginc"
             #include "AutoLight.cginc"
             #include "Assets/1_ShaderTestbed/cginc/noise.cginc"
+            #include "Assets/1_ShaderTestbed/cginc/raymarching.cginc"
             
 
 			#define MAX_STEPS 100
@@ -148,20 +149,6 @@ Shader "Raymarch/DynamicGlowingOrbsMultiColor"
             
             // ------ distance functions ------
 
-
-            float smin(float a, float b, float k) {
-			  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
-			  return lerp(b, a, h) - k * h * (1.0 - h);
-			}
-
-            float4 sminColor(float4 a, float4 b, float k)
-			{
-			    float h = clamp(0.5 + 0.5 * (b.w - a.w) / k, 0.0, 1.0);
-			    float3 color = lerp(b.rgb, a.rgb, h);
-			    float dist = lerp(b.w, a.w, h) - k * h * (1.0 - h);
-			
-			    return float4(color, dist);
-			}
             
             float sphere(float3 p, float r, float3 worldPos, float4x4 rotMatrix)
             {
