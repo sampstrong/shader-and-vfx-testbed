@@ -1,8 +1,7 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class BoxFrameRotation : MonoBehaviour
+public class RotationShifter : MonoBehaviour
 {
     private enum RotDirection
     {
@@ -16,14 +15,13 @@ public class BoxFrameRotation : MonoBehaviour
 
     private RotDirection _rotDirection;
 
-    [SerializeField] private float _speed = 20f;
     [SerializeField] private float _rotTimer = 0f;
     [SerializeField] private float _rotInterval = 2f;
     [SerializeField] private float _rotDuration = 0.5f;
         
     void Update()
     {
-        ContinuouslyRotate();
+        
         
         _rotTimer += Time.deltaTime;
         if (_rotTimer >= _rotInterval)
@@ -32,12 +30,6 @@ public class BoxFrameRotation : MonoBehaviour
             StartCoroutine(LerpToNewRotation(transform.rotation, newRot));
             _rotTimer = 0f;
         }
-    }
-
-    private void ContinuouslyRotate()
-    {
-        transform.Rotate(Vector3.up, _speed * Time.deltaTime);
-        transform.Rotate(Vector3.right, _speed / 3 * Time.deltaTime);
     }
 
     private Quaternion GetRandomRotation()

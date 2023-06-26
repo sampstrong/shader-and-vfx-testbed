@@ -23,6 +23,8 @@ public class PortalAudioEvents : MonoBehaviour
             TriggerSpawn();
         }
         _lastVol = vol;
+        
+        SetBrightness(vol);
     }
 
     public void TriggerSpawn()
@@ -30,5 +32,12 @@ public class PortalAudioEvents : MonoBehaviour
         // _eventAttribute.SetVector3(positionAttribute, player.transform.position);
         
         _effect.SendEvent("OnBeat");
+    }
+
+    private void SetBrightness(float volume)
+    {
+        var clampedVol = Mathf.Clamp(volume, 0, 1);
+        
+        _effect.SetFloat("PortalBrightness", clampedVol);
     }
 }
