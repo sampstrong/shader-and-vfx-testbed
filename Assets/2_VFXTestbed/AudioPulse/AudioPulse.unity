@@ -223,7 +223,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: 733bb6a9d98094df8bfc4fd5f6a3c137, type: 3}
+      objectReference: {fileID: 8300000, guid: 0516f2a6896914af29b434cc41c042c5, type: 3}
     - target: {fileID: 9181985623241623075, guid: da13b5a4d5e8ddd4e8302eea51606c41,
         type: 3}
       propertyPath: m_RootOrder
@@ -757,7 +757,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1248746480}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0.0000000936064, y: 0.45, z: 16}
+  m_LocalPosition: {x: 0.38, y: 0.45, z: 16}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

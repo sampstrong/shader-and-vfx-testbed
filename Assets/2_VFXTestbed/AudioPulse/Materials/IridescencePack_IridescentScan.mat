@@ -40,7 +40,7 @@ Material:
     - _HoloFresnelIntensity: 5.57
     - _HoloFresnelRamp: 4.34
     - _Shading: 1
-    - _SwapThreshold: 26.61741
+    - _SwapThreshold: 28.958902
     - _Transparency: 0
     m_Colors:
     - _Color1: {r: 0, g: 0.5125196, b: 1, a: 0}
