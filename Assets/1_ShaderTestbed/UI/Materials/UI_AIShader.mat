@@ -28,8 +28,9 @@ Material:
     m_Floats:
     - _Amplitude: 6.66
     - _ColorMask: 15
+    - _Frequency: 3.21
     - _LineThickness: 0.01
-    - _Speed: 1
+    - _Speed: 1.52
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
@@ -37,6 +38,6 @@ Material:
     - _StencilWriteMask: 255
     - _UseUIAlphaClip: 0
     m_Colors:
-    - _BackgroundColor: {r: 0.08888453, g: 0.078097194, b: 0.254717, a: 0}
+    - _BackgroundColor: {r: 0.105464585, g: 0.15331298, b: 0.2830189, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
