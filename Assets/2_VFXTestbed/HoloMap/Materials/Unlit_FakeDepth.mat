@@ -27,6 +27,6 @@ Material:
     m_Ints: []
     m_Floats:
     - _GradientScale: 1143.4
-    - _Offset: 10
+    - _Offset: 1
     m_Colors: []
   m_BuildTextureStacks: []
