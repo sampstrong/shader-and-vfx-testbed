@@ -20,7 +20,7 @@ public class GraphPlotter : MonoBehaviour
             
             // functions
             // position.y = position.x;
-            position.y = Mathf.Pow(position.x, 2f);
+            position.y = Mathf.Pow(position.x, 3f);
 
             point.localPosition = position;
             point.localScale = scale;
