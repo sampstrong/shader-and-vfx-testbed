@@ -17,11 +17,11 @@ QualitySettings:
     shadowNearPlaneOffset: 3
     shadowCascade2Split: 0.33333334
     shadowCascade4Split: {x: 0.06666667, y: 0.2, z: 0.46666667}
-    shadowmaskMode: 0
+    shadowmaskMode: 1
     skinWeights: 4
     textureQuality: 0
     anisotropicTextures: 1
-    antiAliasing: 0
+    antiAliasing: 4
     softParticles: 0
     softVegetation: 0
     realtimeReflectionProbes: 0
@@ -40,7 +40,7 @@ QualitySettings:
     asyncUploadBufferSize: 16
     asyncUploadPersistentBuffer: 1
     resolutionScalingFixedDPIFactor: 1
-    customRenderPipeline: {fileID: 11400000, guid: e1260c1148f6143b28bae5ace5e9c5d1,
+    customRenderPipeline: {fileID: 11400000, guid: 7b7fd9122c28c4d15b667c7040e3b3fd,
       type: 2}
     excludedTargetPlatforms: []
   m_PerPlatformDefaultQuality:

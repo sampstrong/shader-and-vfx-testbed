@@ -12,27 +12,15 @@ public class GraphPlotter : MonoBehaviour
     private void Awake()
     {
         var step = 2f / _resolution;
-        var position = Vector3.zero;
         var scale = Vector3.one * step;
 
         // square resolution for z dimension
         _points = new Transform[_resolution * _resolution];
-        for (int i = 0, x = 0, z = 0; i < _points.Length; i++, x++)
+        for (int i = 0; i < _points.Length; i++)
         {
-            if (x == _resolution)
-            {
-                x = 0;
-                z++;
-            }
-                
-            
             var point = _points[i] = Instantiate(
                 _pointPrefab, transform, false);
-
-            // sets positions between -1 and 1
-            position.x = (x + 0.5f) * step - 1f;
-            position.z = (z + 0.5f) * step - 1f;
-            point.localPosition = position;
+            
             point.localScale = scale;
         }
     }
@@ -42,12 +30,18 @@ public class GraphPlotter : MonoBehaviour
         FunctionLibrary.Function func = FunctionLibrary.GetFunction(_functionName);
         
         float time = Time.time;
-        for (int i = 0; i < _points.Length; i++)
+        float step = 2f / _resolution;
+        var v = 0.5f * step - 1f;
+        for (int i = 0, x = 0, z = 0; i < _points.Length; i++, x++)
         {
-            var point = _points[i];
-            var position = point.localPosition;
-            position.y = func(position.x, position.z, time);
-            point.position = position;
+            if (x == _resolution)
+            {
+                x = 0;
+                z++;
+                v = (z + 0.5f) * step - 1f;
+            }
+            var u = (x + 0.5f) * step - 1f;
+            _points[i].localPosition = func(u, v, time);
         }
     }
 
