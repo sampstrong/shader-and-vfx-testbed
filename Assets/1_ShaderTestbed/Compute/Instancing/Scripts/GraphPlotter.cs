@@ -15,14 +15,23 @@ public class GraphPlotter : MonoBehaviour
         var position = Vector3.zero;
         var scale = Vector3.one * step;
 
-        _points = new Transform[_resolution];
-        for (int i = 0; i < _resolution; i++)
+        // square resolution for z dimension
+        _points = new Transform[_resolution * _resolution];
+        for (int i = 0, x = 0, z = 0; i < _points.Length; i++, x++)
         {
+            if (x == _resolution)
+            {
+                x = 0;
+                z++;
+            }
+                
+            
             var point = _points[i] = Instantiate(
                 _pointPrefab, transform, false);
 
             // sets positions between -1 and 1
-            position.x = (i + 0.5f) * step - 1f;
+            position.x = (x + 0.5f) * step - 1f;
+            position.z = (z + 0.5f) * step - 1f;
             point.localPosition = position;
             point.localScale = scale;
         }
@@ -37,7 +46,7 @@ public class GraphPlotter : MonoBehaviour
         {
             var point = _points[i];
             var position = point.localPosition;
-            position.y = func(position.x, time);
+            position.y = func(position.x, position.z, time);
             point.position = position;
         }
     }
