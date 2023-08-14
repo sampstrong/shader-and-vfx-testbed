@@ -49,7 +49,7 @@ Shader "Unlit/ShaderNotes"
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex);
                 
                 // UnityObjectToWorldNormal calculates the correct normal
-                o.normal = UnityObjectToWorldNormal()
+                o.normal = UnityObjectToWorldNormal(v.normal);
                 
                 // UnityObjectToClipPos multiplies vertex pos by MVP matrix
                 o.vertex = UnityObjectToClipPos(v.vertex);
