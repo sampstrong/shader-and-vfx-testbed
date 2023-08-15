@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [ExecuteInEditMode, ImageEffectAllowedInSceneView]
-public class PostEffectsRenderController : MonoBehaviour
+public class PostEffectsRenderControllerDistortion : MonoBehaviour
 {
     [SerializeField] private Color _tintColor;
     [SerializeField] private Shader _postShader;
@@ -10,6 +10,8 @@ public class PostEffectsRenderController : MonoBehaviour
 
     private void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
+        // Debug.Log("Distortion");
+        
         // create a new material if one doesnt exist
         if (!_postMaterial) _postMaterial = new Material(_postShader);
         
@@ -26,7 +28,8 @@ public class PostEffectsRenderController : MonoBehaviour
         
         // copies one render texture to another
         // option to add a material in the process
-        Graphics.Blit(src, renderTexture, _postMaterial);
+        Graphics.Blit(src, renderTexture, _postMaterial, 0);
+        Shader.SetGlobalTexture("_GlobalRenderTexture", renderTexture);
         Graphics.Blit(renderTexture, dest);
         
         // release texture from memory
