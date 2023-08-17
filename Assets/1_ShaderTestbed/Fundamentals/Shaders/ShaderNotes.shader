@@ -42,7 +42,7 @@ Shader "Unlit/ShaderNotes"
                 // which is used for normal mapping
                 float3 normal_world : TEXCOORD3;
                 float4 tangent_world : TEXCOORD4;
-                float4 binormal_world : TEXCOORD5;
+                float3 binormal_world : TEXCOORD5;
             };
 
             sampler2D _MainTex;
@@ -63,7 +63,7 @@ Shader "Unlit/ShaderNotes"
                 
                 // TRANSFORM_TEX sets up the tiling and offset for each texture
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                o.uv_normal(v.uv, _NormalMap);
+                o.uv_normal = TRANSFORM_TEX(v.uv, _NormalMap);
                 
                 // unity_ObjectToWorld is the modelMatrix
                 // multiply by local position to get world pos
@@ -73,7 +73,7 @@ Shader "Unlit/ShaderNotes"
                 o.normal_world = UnityObjectToWorldNormal(v.normal);
                 
                 // transform tangents to world space
-                o.tangent_world = normalize(mul(v.tangent, unity_WorldToObject);
+                o.tangent_world = normalize(mul(v.tangent, unity_WorldToObject));
                 
                 // calculate the cross product between the normals and tangents
                 o.binormal_world = normalize(cross(o.normal_world, o.tangent_world) *
@@ -88,7 +88,7 @@ Shader "Unlit/ShaderNotes"
                 fixed4 normal_map = tex2D(_NormalMap, i.uv_normal);
                 
                 // UnpackNormal performs DXT Compression and optimizes the normal map
-                fixed3 normalCompressed = UnpackNormal(normal_map);
+                fixed3 normal_compressed = UnpackNormal(normal_map);
                 
                 // TBN matrix transforms the normal
                 float3x3 TBN_matrix = float3x3
@@ -97,7 +97,7 @@ Shader "Unlit/ShaderNotes"
                     i.binormal_world,
                     i.normal_world
                 );
-                fixed4 normal_color = normalize(mul(normal_compressed, TBN_matrix);
+                fixed3 normal_color = normalize(mul(normal_compressed, TBN_matrix));
                 
                 // output the normal color
                 // return fixed4(normal_color, 1.0);
