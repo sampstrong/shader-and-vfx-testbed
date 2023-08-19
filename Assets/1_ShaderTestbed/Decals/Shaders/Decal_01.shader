@@ -7,6 +7,8 @@ Shader "Unlit/Decal_01"
     SubShader
     {
         Tags { "RenderType"="Transparent" "Queue"="Transparent" }
+        Cull Front
+        ZTest Off
         LOD 100
 
         Pass
@@ -56,8 +58,11 @@ Shader "Unlit/Decal_01"
                 float2 screenUv = i.screenPos.xy / i.screenPos.w;
                 
                 // sample depth texture and convert to linear values
-                float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenUv);
-                depth = Linear01Depth(depth) * _ProjectionParams.z;
+                // float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenUv);
+                // depth = Linear01Depth(depth) * _ProjectionParams.z;
+
+                // does the same thing in one line
+                float depth = LinearEyeDepth(tex2Dproj(_CameraDepthTexture, i.screenPos));
 
                 // adjust ray to account for parallel distance vs euclidian distance
                 float3 worldRay = normalize(i.ray);
