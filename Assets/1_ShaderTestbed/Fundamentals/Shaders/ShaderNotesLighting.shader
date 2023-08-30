@@ -42,6 +42,23 @@ Shader "Unlit/ShaderNotesLighting"
                 return o;
             }
 
+            float4 blinnPhong(float3 normal, float3 worldPos, float3 color, float gloss)
+            {
+                float3 N = normalize(normal); // must always normalize normal again in fragment stage
+                float3 L = _WorldSpaceLightPos0.xyz;
+                float3 V = normalize(_WorldSpaceCameraPos - worldPos);
+
+                float3 lambert = saturate(dot(N, L));
+                float3 diffuseLight = lambert * unity_LightColor0.xyz;
+                float3 diffuseColor = diffuseLight * color;
+                float3 ambientLight = UNITY_LIGHTMODEL_AMBIENT.xyz;
+                float3 H = normalize(L + V);
+                float3 specularLight = saturate(dot(N, H)) * (lambert > 0.0);
+                specularLight = pow(specularLight, gloss) * unity_LightColor0.xyz;
+
+                return float4(diffuseColor + ambientLight + specularLight, 1.0);
+            }
+
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
