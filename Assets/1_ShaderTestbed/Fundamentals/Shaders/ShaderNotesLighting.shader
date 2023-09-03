@@ -4,6 +4,7 @@ Shader "Unlit/ShaderNotesLighting"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _Ambient ("Ambient Amount", Range(0, 1)) = 1
+        _Gloss ("Gloss", Range(0, 1)) = 0.5
     }
     SubShader
     {
@@ -40,6 +41,12 @@ Shader "Unlit/ShaderNotesLighting"
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 return o;
+            }
+            
+            float normalizeGloss(float gloss01)
+            {
+                // converts 0-1 gloss values to correct scale
+                return exp2(gloss01 * 8.0) + 2;
             }
 
             float4 blinnPhong(float3 normal, float3 worldPos, float3 color, float gloss)
