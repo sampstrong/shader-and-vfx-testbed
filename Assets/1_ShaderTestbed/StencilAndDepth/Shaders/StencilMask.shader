@@ -22,9 +22,9 @@ Shader "Unlit/StencilMask"
         Tags { "RenderType"="Transparent" "Queue"="Geometry" }
         Blend SrcAlpha OneMinusSrcAlpha
         LOD 100
-        ColorMask 0
+//        ColorMask 0
         ZTest LEqual
-        ZWrite Off
+        ZWrite Off // zwrite on will make it so unmasked object dissappears
         
         Stencil
         {
@@ -67,6 +67,7 @@ Shader "Unlit/StencilMask"
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
+                col.a = 0.02;
                 return col;
             }
             ENDCG
