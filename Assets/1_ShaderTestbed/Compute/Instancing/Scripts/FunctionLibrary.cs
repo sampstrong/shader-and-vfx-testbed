@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using static UnityEngine.Mathf;
 
@@ -22,6 +21,12 @@ public static class FunctionLibrary
     {
         var choice = (FunctionName)Random.Range(1, functions.Length);
         return choice == name ? 0 : choice;
+    }
+
+    public static Vector3 Morph(float u, float v, float t, Function from, Function to, float progress)
+    {
+        // using smoothstep instead of direct progress value will apply easing
+        return Vector3.LerpUnclamped(from(u, v, t), to(u, v, t), SmoothStep(0f, 1f, progress));
     }
     
     public static Vector3 Wave(float u, float v, float t)

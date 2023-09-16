@@ -9,10 +9,12 @@ public class GraphPlotterRefactored : MonoBehaviour
     private enum TransitionMode { Cycle, Random }
     [SerializeField] private TransitionMode _transitionMode;
 
-    [SerializeField, Min(0)] private float functionDuration = 1f;
+    [SerializeField, Min(0)] private float _functionDuration = 1f, _transitionDuration = 1f;
 
     private Transform[] _points;
-    private float duration;
+    private float _duration;
+    private bool _transitioning;
+    private FunctionLibrary.FunctionName _transitionFunction;
 
     private struct UvCoord
     {
@@ -32,13 +34,24 @@ public class GraphPlotterRefactored : MonoBehaviour
 
     private void Update()
     {
-        duration += Time.deltaTime;
-        if (duration >= functionDuration)
+        _duration += Time.deltaTime;
+        if (_transitioning)
         {
-            duration -= functionDuration;
+            if (_duration >= _transitionDuration)
+            {
+                _duration -= _transitionDuration;
+                _transitioning = false;
+            }
+        }
+        else if (_duration >= _functionDuration)
+        {
+            _duration -= _functionDuration;
+            _transitioning = true;
+            _transitionFunction = _functionName;
             PickNextFunction();
         }
-        UpdateFunction();
+        if (_transitioning) { UpdateFunctionTransition(); }
+        else { UpdateFunction(); }
     }
 
     private void PickNextFunction()
@@ -57,6 +70,20 @@ public class GraphPlotterRefactored : MonoBehaviour
         {
             var coord = _uvCoords[i];
             _points[i].localPosition = func(coord.u, coord.v, time);
+        }
+    }
+    
+    private void UpdateFunctionTransition()
+    {
+        FunctionLibrary.Function
+            from = FunctionLibrary.GetFunction(_transitionFunction),
+            to = FunctionLibrary.GetFunction(_functionName);
+        float progress = _duration / _transitionDuration;
+        float time = Time.time;
+        for (int i = 0; i < _points.Length; i++)
+        {
+            var coord = _uvCoords[i];
+            _points[i].localPosition = FunctionLibrary.Morph(coord.u, coord.v, time, from, to, progress);
         }
     }
 
