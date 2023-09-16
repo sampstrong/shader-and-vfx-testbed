@@ -277,7 +277,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a335e730e4d246fdb174ac77d00b98f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  displayMode: 0
   display: {fileID: 84564079}
+  sampleDuration: 1
 --- !u!1 &472918176
 GameObject:
   m_ObjectHideFlags: 0
@@ -723,6 +725,8 @@ MonoBehaviour:
     type: 3}
   _resolution: 100
   _functionName: 6
+  _transitionMode: 1
+  functionDuration: 1
 --- !u!4 &2031431147
 Transform:
   m_ObjectHideFlags: 0

@@ -5,8 +5,14 @@ public class GraphPlotterRefactored : MonoBehaviour
     [SerializeField] private Transform _pointPrefab;
     [SerializeField, Range(0, 100)] private int _resolution = 10;
     [SerializeField] private FunctionLibrary.FunctionName _functionName;
+    
+    private enum TransitionMode { Cycle, Random }
+    [SerializeField] private TransitionMode _transitionMode;
+
+    [SerializeField, Min(0)] private float functionDuration = 1f;
 
     private Transform[] _points;
+    private float duration;
 
     private struct UvCoord
     {
@@ -26,8 +32,26 @@ public class GraphPlotterRefactored : MonoBehaviour
 
     private void Update()
     {
+        duration += Time.deltaTime;
+        if (duration >= functionDuration)
+        {
+            duration -= functionDuration;
+            PickNextFunction();
+        }
+        UpdateFunction();
+    }
+
+    private void PickNextFunction()
+    {
+        _functionName = _transitionMode == TransitionMode.Cycle
+            ? FunctionLibrary.GetNextFunctionName(_functionName)
+            : FunctionLibrary.GetRandomFunctionNameOtherThan(_functionName);
+    }
+
+    private void UpdateFunction()
+    {
         FunctionLibrary.Function func = FunctionLibrary.GetFunction(_functionName);
-        
+
         float time = Time.time;
         for (int i = 0; i < _points.Length; i++)
         {
@@ -35,7 +59,7 @@ public class GraphPlotterRefactored : MonoBehaviour
             _points[i].localPosition = func(coord.u, coord.v, time);
         }
     }
-    
+
     private void SetUpUvs()
     {
         var step = 2f / _resolution;
