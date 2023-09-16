@@ -476,7 +476,7 @@ MonoBehaviour:
   _computeShader: {fileID: 7200000, guid: 55cc46cb61a1e4d89b71ea1e76efb564, type: 3}
   _material: {fileID: 2100000, guid: 6a15c616c90b0498e8e3dee4d168a5d1, type: 2}
   _mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  _resolution: 200
+  _resolution: 1000
   _functionName: 5
   _transitionMode: 0
   _functionDuration: 1

@@ -5,7 +5,7 @@ public class GPUGraph : MonoBehaviour
     [SerializeField] private ComputeShader _computeShader;
     [SerializeField] private Material _material;
     [SerializeField] private Mesh _mesh;
-    [SerializeField, Range(0, 200)] private int _resolution = 10;
+    [SerializeField, Range(0, 1000)] private int _resolution = 10;
     [SerializeField] private FunctionLibrary.FunctionName _functionName;
     
     private enum TransitionMode { Cycle, Random }

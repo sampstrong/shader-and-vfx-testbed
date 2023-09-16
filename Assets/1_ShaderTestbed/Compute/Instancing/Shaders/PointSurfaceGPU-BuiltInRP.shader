@@ -9,6 +9,7 @@ Shader "Graph/PointSurfaceGPU-BuiltInRP"
         CGPROGRAM
         #pragma surface ConfigureSurface Standard fullforwardshadows addshadow
         #pragma instancing_options assumeuniformscaling procedural:ConfigureProcedural
+        #pragma editor_sync_compilation
         #pragma target 4.5
 
         // temporarily defined to edit inside preprocessor directive
