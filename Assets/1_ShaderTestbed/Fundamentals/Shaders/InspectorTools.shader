@@ -8,7 +8,7 @@ Shader "Unlit/InspectorTools"
         [Enum(UnityEngine.Rendering.CompareFunction)] _StencilCompFunction ("Stencil Comp Function", Float) = 1
         
         // https://docs.unity3d.com/ScriptReference/Rendering.StencilOp.html
-        [Enum(UnityEngine.Rendering.Rendering.StencilOp)] _StencilPassOperation ("Stencil Pass Operation", Float) = 1
+        [Enum(UnityEngine.Rendering.StencilOp)] _StencilPassOperation ("Stencil Pass Operation", Float) = 1
         
         // pulls a specific unity enum - see links below
         [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Float) = 4
