@@ -2,10 +2,12 @@ using UnityEngine;
 
 public class GPUGraph : MonoBehaviour
 {
+    private const int _maxResolution = 1000;
+    
     [SerializeField] private ComputeShader _computeShader;
     [SerializeField] private Material _material;
     [SerializeField] private Mesh _mesh;
-    [SerializeField, Range(0, 1000)] private int _resolution = 10;
+    [SerializeField, Range(10, _maxResolution)] private int _resolution = 10;
     [SerializeField] private FunctionLibrary.FunctionName _functionName;
     
     private enum TransitionMode { Cycle, Random }
@@ -35,7 +37,7 @@ public class GPUGraph : MonoBehaviour
     private void OnEnable()
     {
         // each position is a Vector3, so the stride is 3 * 4 bytes per float
-        _positionsBuffer = new ComputeBuffer(_resolution * _resolution, 3 * 4);
+        _positionsBuffer = new ComputeBuffer(_maxResolution * _maxResolution, 3 * 4);
     }
 
     private void OnDisable()
@@ -91,7 +93,7 @@ public class GPUGraph : MonoBehaviour
         _material.SetFloat(_stepId, step);
         
         var bounds = new Bounds(Vector3.zero, Vector3.one * (2f + 2f / _resolution));
-        Graphics.DrawMeshInstancedProcedural(_mesh, 0, _material, bounds, _positionsBuffer.count);
+        Graphics.DrawMeshInstancedProcedural(_mesh, 0, _material, bounds, _resolution * _resolution);
     }
 
 }
