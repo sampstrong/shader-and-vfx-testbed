@@ -14,6 +14,8 @@ Shader "Custom/StencilMask" {
                 Pass replace  // Replace the stencil value with the reference value
             }
             
+//            ZTest Always
+            
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag

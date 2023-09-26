@@ -1,10 +1,13 @@
-Shader "Custom/MaskedObject" 
+Shader "Custom/MaskedObjectBack" 
 {
     SubShader 
     {
         Tags { "Queue" = "Transparent" } // Render queue to ensure it's rendered after the stencil mask
+        
         Pass 
         {
+            Name "OverlappingMask"
+            
             Stencil 
             {
                 Ref 1         // Set the same reference value as in the StencilMaskShader
@@ -45,6 +48,7 @@ Shader "Custom/MaskedObject"
         }
         Pass 
         {
+            Name "OutsideMask"
             Stencil 
             {
                 Ref 0         // Render normally where stencil value is 0 (no mask)
@@ -78,7 +82,7 @@ Shader "Custom/MaskedObject"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 col = fixed4(1,1,1,1);
+                fixed4 col = fixed4(0,0.5,1,1);
                 return col;
             }
             ENDCG
