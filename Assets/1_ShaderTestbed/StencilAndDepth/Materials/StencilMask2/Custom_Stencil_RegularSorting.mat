@@ -24,7 +24,7 @@ Material:
     m_Floats:
     - _StencilCompFunction: 7
     - _StencilPassOperation: 1
-    - _StencilRef: 2
-    - _StencilZFailOperation: 3
+    - _StencilRef: 1
+    - _StencilZFailOperation: 0
     m_Colors: []
   m_BuildTextureStacks: []

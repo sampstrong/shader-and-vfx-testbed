@@ -15,10 +15,10 @@ Shader "Custom/Stencil/MaskedObject"
         
         Stencil
         {
-            Ref [_StencilRef]
-            Comp [_StencilCompFunction]
-            Pass [_StencilPassOperation]
-            ZFail [_StencilZFailOperation]
+            Ref [_StencilRef]               // 1
+            Comp [_StencilCompFunction]     // Greater
+            Pass [_StencilPassOperation]    // Replace
+            ZFail [_StencilZFailOperation]  // Keep
         }
 
         Pass

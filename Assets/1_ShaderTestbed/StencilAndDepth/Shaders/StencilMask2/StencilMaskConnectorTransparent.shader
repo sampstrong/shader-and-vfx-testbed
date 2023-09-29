@@ -1,4 +1,4 @@
-Shader "Custom/Stencil/StencilMask"
+Shader "Custom/Stencil/StencilMaskConnectorTransparent"
 {
     Properties
     {
@@ -13,6 +13,7 @@ Shader "Custom/Stencil/StencilMask"
     SubShader
     {
         Tags { "RenderType"="Opaque" "Queue"="Geometry-1" }
+        Blend SrcAlpha OneMinusSrcAlpha
         LOD 100
 
         Pass
@@ -39,18 +40,24 @@ Shader "Custom/Stencil/StencilMask"
             struct v2f
             {
                 float4 vertex : SV_POSITION;
+                float3 localPos : TEXCOORD0;
             };
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
+                o.localPos = v.vertex;
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-                return fixed4(1.0, 0.5, 0.0, 1.0);
+                fixed4 col1 = 1.0;
+                fixed4 col2 = col1;
+                col2.a = 0.0;
+                // fixed4 col2 = fixed4(0.0, 0.5, 1.0, 1.0);
+                return lerp(col1, col2, saturate(pow(i.localPos.y + 0.5, 0.5)));
             }
             ENDCG
         }

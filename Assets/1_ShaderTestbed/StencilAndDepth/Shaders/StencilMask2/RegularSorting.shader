@@ -15,10 +15,10 @@ Shader "Custom/Stencil/RegularSorting"
         
         Stencil
         {
-            Ref [_StencilRef]
-            Comp [_StencilCompFunction]
-            Pass [_StencilPassOperation]
-            ZFail [_StencilZFailOperation]
+            Ref [_StencilRef]              // 1
+            Comp [_StencilCompFunction]    // GEqual, Always, or Disabled
+            Pass [_StencilPassOperation]   // Zero
+            ZFail [_StencilZFailOperation] // Keep
         }
 
         Pass
