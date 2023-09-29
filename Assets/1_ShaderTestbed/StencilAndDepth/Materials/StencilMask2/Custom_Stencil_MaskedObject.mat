@@ -7,20 +7,24 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Custom_StencilMask
-  m_Shader: {fileID: 4800000, guid: 03319fe3b7299c2429fbdd2ae635e303, type: 3}
+  m_Name: Custom_Stencil_MaskedObject
+  m_Shader: {fileID: 4800000, guid: 2309dfd2c1a90b740821c189889e5ba7, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2998
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs: []
     m_Ints: []
-    m_Floats: []
+    m_Floats:
+    - _StencilCompFunction: 5
+    - _StencilPassOperation: 2
+    - _StencilRef: 2
+    - _StencilZFailOperation: 0
     m_Colors: []
   m_BuildTextureStacks: []
