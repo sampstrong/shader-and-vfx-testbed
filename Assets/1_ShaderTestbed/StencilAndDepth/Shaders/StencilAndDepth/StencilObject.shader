@@ -4,8 +4,8 @@ Shader "Unlit/StencilObject"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _Stencil ("Stencil", Float) = 1
-        _Comp ("Comp", Float) = 1
-        _Pass ("Pass", Float) = 1
+        [Enum(UnityEngine.Rendering.CompareFunction)] _Comp ("Comp", Float) = 1
+        [Enum(UnityEngine.Rendering.StencilOp)] _Pass ("Pass", Float) = 1
     }
     SubShader
     {
