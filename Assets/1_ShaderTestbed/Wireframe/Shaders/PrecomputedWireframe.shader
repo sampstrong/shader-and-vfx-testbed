@@ -47,14 +47,16 @@ Shader "Unlit/PrecomputedWireframe"
 
             float getWireframe(float3 coordColor, float thickness)
             {
-                float3 dX = abs(ddx(coordColor));
-                float3 dY = abs(ddy(coordColor));
-                float3 change = dX + dY;
-                float smooth = 0.01;
-                float normalizedThickenss = thickness * change;
-                // float3 value = step(thickness * change, coordColor);
-                float3 value = smoothstep(normalizedThickenss, normalizedThickenss + smooth, coordColor);
+                float3 delta = fwidth(coordColor);
+                float3 value = step(thickness * delta, coordColor);
                 return 1.0 - min(min(value.r, value.g), value.b);
+
+                // does the same thing
+                // coordColor.z = 1 - coordColor.x - coordColor.y;
+	            // float3 deltas = fwidth(coordColor);
+	            // coordColor = smoothstep(deltas, 2 * deltas, coordColor);
+	            // float minBary = min(coordColor.x, min(coordColor.y, coordColor.z));
+                // return 1.0 - minBary;
             }
 
             fixed4 frag (v2f i, bool front : SV_isFrontFace) : SV_Target
@@ -102,14 +104,16 @@ Shader "Unlit/PrecomputedWireframe"
 
             float getWireframe(float3 coordColor, float thickness)
             {
-                float3 dX = abs(ddx(coordColor));
-                float3 dY = abs(ddy(coordColor));
-                float3 change = dX + dY;
-                float smooth = 0.01;
-                float normalizedThickenss = thickness * change;
-                // float3 value = step(thickness * change, coordColor);
-                float3 value = smoothstep(normalizedThickenss, normalizedThickenss + smooth, coordColor);
+                float3 delta = fwidth(coordColor);
+                float3 value = step(thickness * delta, coordColor);
                 return 1.0 - min(min(value.r, value.g), value.b);
+
+                // does the same thing
+                // coordColor.z = 1 - coordColor.x - coordColor.y;
+	            // float3 deltas = fwidth(coordColor);
+	            // coordColor = smoothstep(deltas, 2 * deltas, coordColor);
+	            // float minBary = min(coordColor.x, min(coordColor.y, coordColor.z));
+                // return 1.0 - minBary;
             }
 
             fixed4 frag (v2f i, bool front : SV_isFrontFace) : SV_Target

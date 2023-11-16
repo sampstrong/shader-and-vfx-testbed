@@ -19,6 +19,7 @@ public class MeshDataBuilder : MonoBehaviour
 
         SplitMesh(mesh);
         SetVertexColors(mesh);
+        Debug.Log("Running");
     }
 
     /// <summary>
