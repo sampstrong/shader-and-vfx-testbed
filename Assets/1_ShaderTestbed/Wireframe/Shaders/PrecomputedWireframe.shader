@@ -3,6 +3,7 @@ Shader "Unlit/PrecomputedWireframe"
     Properties
     {
         _WireframeThickness ("Wireframe Thickness", Float) = 1
+        _Offset ("Offset", Float) = 0
     }
     SubShader
     {
@@ -35,7 +36,7 @@ Shader "Unlit/PrecomputedWireframe"
                 float4 color : TEXCOORD1;
             };
 
-            float _WireframeThickness;
+            float _WireframeThickness, _Offset;
 
             v2f vert (appdata v)
             {
@@ -51,6 +52,10 @@ Shader "Unlit/PrecomputedWireframe"
                 float3 value = step(thickness * delta, coordColor);
                 return 1.0 - min(min(value.r, value.g), value.b);
 
+                // float3 delta = fwidth(coordColor);
+                // float3 value = step(thickness, coordColor) - step((thickness - _Offset), coordColor);
+                // return 1.0 - min(min(value.r, value.g), value.b);
+
                 // does the same thing
                 // coordColor.z = 1 - coordColor.x - coordColor.y;
 	            // float3 deltas = fwidth(coordColor);
@@ -62,9 +67,16 @@ Shader "Unlit/PrecomputedWireframe"
             fixed4 frag (v2f i, bool front : SV_isFrontFace) : SV_Target
             {
                 // fixed4 col = i.color;
-                fixed4 col = getWireframe(i.color.rgb, front ? _WireframeThickness : _WireframeThickness * 0.75);
+                // fixed4 col = getWireframe(i.color.rgb, front ? _WireframeThickness : _WireframeThickness * 0.75);
                 // if (col.a == 0) discard;
-                return front ? col : col * 0.4;
+
+
+                float w1 = getWireframe(i.color.rgb, _WireframeThickness * 0.5 + _Offset);
+                float w2 = getWireframe(i.color.rgb, _WireframeThickness * 0.5);
+                fixed4 col = w1 - w2;
+
+                
+                return front ? col : col * 0.3;
             }
             ENDCG
         }
@@ -92,7 +104,7 @@ Shader "Unlit/PrecomputedWireframe"
                 float4 color : TEXCOORD1;
             };
 
-            float _WireframeThickness;
+            float _WireframeThickness, _Offset;
 
             v2f vert (appdata v)
             {
@@ -119,7 +131,12 @@ Shader "Unlit/PrecomputedWireframe"
             fixed4 frag (v2f i, bool front : SV_isFrontFace) : SV_Target
             {
                 // fixed4 col = i.color;
-                fixed4 col = getWireframe(i.color.rgb, front ? _WireframeThickness : _WireframeThickness * 0.75);
+                // fixed4 col = getWireframe(i.color.rgb, front ? _WireframeThickness : _WireframeThickness * 0.75);
+
+                float w1 = getWireframe(i.color.rgb, _WireframeThickness + _Offset);
+                float w2 = getWireframe(i.color.rgb, _WireframeThickness);
+                fixed4 col = w1 - w2;
+                
                 // if (col.a == 0) discard;
                 return front ? col : col * 0.4;
             }

@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter))]
 public class MeshDataBuilder : MonoBehaviour
 {
+    [ContextMenu("Reset")]
     private void Reset()
     {
         GenerateMeshData();

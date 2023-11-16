@@ -26,6 +26,6 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _WireframeThickness: 1.92
+    - _WireframeThickness: 1.2
     m_Colors: []
   m_BuildTextureStacks: []
