@@ -7,6 +7,7 @@ Shader "Unlit/PrecomputedWireframe"
     SubShader
     {
         Tags { "RenderType"="Opaque" }
+        Cull Off
         LOD 100
 
         Pass
@@ -41,20 +42,21 @@ Shader "Unlit/PrecomputedWireframe"
                 return o;
             }
 
-            float getWireframe(float3 coordColor)
+            float getWireframe(float3 coordColor, float thickness)
             {
                 float3 dX = abs(ddx(coordColor));
                 float3 dY = abs(ddy(coordColor));
                 float3 change = dX + dY;
-                float3 value = step(_WireframeThickness * change, coordColor);
+                float3 value = step(thickness * change, coordColor);
                 return 1.0 - min(min(value.r, value.g), value.b);
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            fixed4 frag (v2f i, bool front : SV_isFrontFace) : SV_Target
             {
                 // fixed4 col = i.color;
-                fixed4 col = getWireframe(i.color.rgb);
-                return col;
+                fixed4 col = getWireframe(i.color.rgb, front ? _WireframeThickness : _WireframeThickness * 0.75);
+                if (col.a == 0) discard;
+                return front ? col : col * 0.4;
             }
             ENDCG
         }
