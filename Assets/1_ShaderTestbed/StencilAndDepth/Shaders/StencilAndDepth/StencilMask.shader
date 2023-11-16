@@ -68,6 +68,7 @@ Shader "Unlit/StencilMask"
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
                 col.a = 0.02;
+                col.b = 0.05;
                 return col;
             }
             ENDCG

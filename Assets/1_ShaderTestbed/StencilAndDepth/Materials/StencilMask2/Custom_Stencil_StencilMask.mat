@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Custom_Stencil_StencilMask
+  m_Shader: {fileID: 4800000, guid: d06d0b8f0a60d4e48b3aab05209a9616, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 1998
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Ints: []
+    m_Floats:
+    - _StencilCompFunction: 8
+    - _StencilCompFunction2: 7
+    - _StencilPassOperation: 2
+    - _StencilPassOperation2: 2
+    - _StencilRef: 1
+    - _StencilRef2: 3
+    - _StencilZFailOperation: 0
+    - _StencilZFailOperation2: 0
+    m_Colors: []
+  m_BuildTextureStacks: []

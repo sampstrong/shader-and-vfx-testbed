@@ -1,4 +1,11 @@
-#pragma kernel FunctionKernel
+#pragma kernel WaveKernel
+#pragma kernel MultiWaveKernel
+#pragma kernel RippleKernel
+#pragma kernel SphereKernel
+#pragma kernel ModulatedSphereKernel
+#pragma kernel TorusKernel
+#pragma kernel RotatingStarKernel
+
 
 RWStructuredBuffer<float3> _Positions;
 
@@ -31,10 +38,87 @@ float3 Wave(float u, float v, float t)
     return p;
 }
 
-[numthreads(8, 8, 1)]
-void FunctionKernel (uint3 id: SV_DispatchThreadID)
+float3 MultiWave(float u, float v, float t)
 {
-    float2 uv = GetUV(id);
-    SetPosition(id, Wave(uv.x, uv.y, _Time));
+    float3 p;
+    p.x = u;
+    p.y = sin(PI * (u + t * 0.5));
+    p.y += sin(2.0 * PI * (v + t)) * 0.5;
+    p.y += sin(PI * (u + v + 0.25 * t));
+    p.y *= 1.0 / 2.5;
+    p.z = v;
+    return p;
 }
+
+float3 Ripple(float u, float v, float t)
+{
+    float d = sqrt(u * u + v * v);
+    float3 p;
+    p.x = u;
+    p.y = sin(PI * (4.0 * d - t));
+    p.y /= 1.0 + 10.0 * d;
+    p.z = v;
+    return p;
+}
+
+float3 Sphere(float u, float v, float t)
+{
+    float r = cos(0.5 * PI * v);
+    float3 p;
+    p.x = r * sin(PI * u);
+    p.y = sin(PI * 0.5 * v);
+    p.z = r * cos(PI * u);
+    return p;
+}
+
+float3 ModulatedSphere(float u, float v, float t)
+{
+    float r = 0.9 + 0.1 * sin(PI * (6.0 * u + 4.0 * v + t));
+    float s = r * cos(0.5 * PI * v);
+    float3 p;
+    p.x = s * sin(PI * u);
+    p.y = r * sin(PI * 0.5 * v);
+    p.z = s * cos(PI * u);
+    return p;
+}
+
+float3 Torus(float u, float v, float t)
+{
+    float r1 = 0.75;
+    float r2 = 0.25;
+    float s = r1 + r2 * cos(PI * v);
+    float3 p;
+    p.x = s * sin(PI * u);
+    p.y = r2 * sin(PI * v);
+    p.z = s * cos(PI * u);
+    return p;
+}
+    
+float3 RotatingStar(float u, float v, float t)
+{
+    float r1 = 0.7 + 0.1 * sin(PI * (6.0 * u + 0.5 * t));
+    float r2 = 0.15 + 0.05 * sin(PI * (8.0 * u + 4.0 * v + 2.0 * t));
+    float s = r1 + r2 * cos(PI * v);
+    float3 p;
+    p.x = s * sin(PI * u);
+    p.y = r2 * sin(PI * v);
+    p.z = s * cos(PI * u);
+    return p;
+}
+
+#define KERNEL_FUNCTION(function) \
+    [numthreads(8, 8, 1)] \
+    void function##Kernel (uint3 id: SV_DispatchThreadID) \
+    { \
+        float2 uv = GetUV(id); \
+        SetPosition(id, function(uv.x, uv.y, _Time)); \
+    }
+
+KERNEL_FUNCTION(Wave)
+KERNEL_FUNCTION(MultiWave)
+KERNEL_FUNCTION(Ripple)
+KERNEL_FUNCTION(Sphere)
+KERNEL_FUNCTION(ModulatedSphere)
+KERNEL_FUNCTION(Torus)
+KERNEL_FUNCTION(RotatingStar)
 

@@ -2,10 +2,12 @@ using UnityEngine;
 
 public class GPUGraph : MonoBehaviour
 {
+    private const int _maxResolution = 1000;
+    
     [SerializeField] private ComputeShader _computeShader;
     [SerializeField] private Material _material;
     [SerializeField] private Mesh _mesh;
-    [SerializeField, Range(0, 1000)] private int _resolution = 10;
+    [SerializeField, Range(10, _maxResolution)] private int _resolution = 10;
     [SerializeField] private FunctionLibrary.FunctionName _functionName;
     
     private enum TransitionMode { Cycle, Random }
@@ -35,7 +37,7 @@ public class GPUGraph : MonoBehaviour
     private void OnEnable()
     {
         // each position is a Vector3, so the stride is 3 * 4 bytes per float
-        _positionsBuffer = new ComputeBuffer(_resolution * _resolution, 3 * 4);
+        _positionsBuffer = new ComputeBuffer(_maxResolution * _maxResolution, 3 * 4);
     }
 
     private void OnDisable()
@@ -46,22 +48,22 @@ public class GPUGraph : MonoBehaviour
 
     private void Update()
     {
-        _duration += Time.deltaTime;
-        if (_transitioning)
-        {
-            if (_duration >= _transitionDuration)
-            {
-                _duration -= _transitionDuration;
-                _transitioning = false;
-            }
-        }
-        else if (_duration >= _functionDuration)
-        {
-            _duration -= _functionDuration;
-            _transitioning = true;
-            _transitionFunction = _functionName;
-            PickNextFunction();
-        }
+        // _duration += Time.deltaTime;
+        // if (_transitioning)
+        // {
+        //     if (_duration >= _transitionDuration)
+        //     {
+        //         _duration -= _transitionDuration;
+        //         _transitioning = false;
+        //     }
+        // }
+        // else if (_duration >= _functionDuration)
+        // {
+        //     _duration -= _functionDuration;
+        //     _transitioning = true;
+        //     _transitionFunction = _functionName;
+        //     PickNextFunction();
+        // }
         
         UpdateFunctionGPU();
     }
@@ -79,19 +81,22 @@ public class GPUGraph : MonoBehaviour
         _computeShader.SetInt(_resolutionId, _resolution);
         _computeShader.SetFloat(_stepId, step);
         _computeShader.SetFloat(_timeId, Time.time);
+
+        // get the kernel index 
+        var kernelIndex = (int)_functionName;
         
         // can use _computeShader.FindKernel() to get the index if multiple kernels
-        _computeShader.SetBuffer(0, _positionsId, _positionsBuffer);
+        _computeShader.SetBuffer(kernelIndex, _positionsId, _positionsBuffer);
         
         // divide resolution by 8 for each dimension because of out fixed 8x8 group size in the compute shader
         int groups = Mathf.CeilToInt(_resolution / 8f);
-        _computeShader.Dispatch(0, groups, groups, 1);
+        _computeShader.Dispatch(kernelIndex, groups, groups, 1);
 
         _material.SetBuffer(_positionsId, _positionsBuffer);
         _material.SetFloat(_stepId, step);
         
         var bounds = new Bounds(Vector3.zero, Vector3.one * (2f + 2f / _resolution));
-        Graphics.DrawMeshInstancedProcedural(_mesh, 0, _material, bounds, _positionsBuffer.count);
+        Graphics.DrawMeshInstancedProcedural(_mesh, 0, _material, bounds, _resolution * _resolution);
     }
 
 }

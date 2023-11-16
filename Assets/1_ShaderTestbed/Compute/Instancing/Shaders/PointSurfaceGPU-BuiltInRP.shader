@@ -12,8 +12,7 @@ Shader "Graph/PointSurfaceGPU-BuiltInRP"
         #pragma editor_sync_compilation
         #pragma target 4.5
 
-        // temporarily defined to edit inside preprocessor directive
-        // #define UNITY_PROCEDURAL_INSTANCING_ENABLED
+        #include "PointGPU.hlsl"
         
         struct Input
         {
@@ -21,28 +20,6 @@ Shader "Graph/PointSurfaceGPU-BuiltInRP"
         };
         
         float _Smoothness;
-        
-        #if defined(UNITY_PROCEDURAL_INSTANCING_ENABLED)
-            StructuredBuffer<float3> _Positions;
-        #endif
-
-        float _Step;
-        
-        void ConfigureProcedural() 
-        {
-            #if defined(UNITY_PROCEDURAL_INSTANCING_ENABLED)
-                float3 position = _Positions[unity_InstanceID];
-
-                // reset to identity
-                unity_ObjectToWorld = 0.0;
-
-                // sets positions
-                unity_ObjectToWorld._m03_m13_m23_m33 = float4(position, 1.0);
-
-                // sets scale
-                unity_ObjectToWorld._m00_m11_m22 = _Step;
-            #endif
-        }
         
         void ConfigureSurface(Input input, inout SurfaceOutputStandard surface)
         {
